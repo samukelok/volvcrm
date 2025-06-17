@@ -16,6 +16,13 @@ return [
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+
+        'api' => [  // ← This was missing and is required for Sanctum
+            'driver' => 'sanctum',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+
     ],
 
     /*
@@ -98,6 +105,8 @@ return [
             'throttle' => 60,
         ],
     ],
+
+    
 
     /*
     |--------------------------------------------------------------------------
