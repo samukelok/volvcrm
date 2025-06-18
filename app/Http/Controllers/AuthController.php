@@ -70,6 +70,32 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user()->load('roles'));
+        $user = $request->user()->load('roles');
+        
+        $response = [
+            'user' => $user,
+            'dashboard' => []
+        ];
+
+        if ($user->hasRole('admin')) {
+            $response['dashboard'] = [
+                'type' => 'admin',
+                'quick_actions' => [
+                    ['title' => 'Manage Clients', 'url' => '/admin/clients'],
+                    ['title' => 'View Funnel Requests', 'url' => '/admin/funnel-requests']
+                ],
+                'stats' => [] // We'll populate this later
+            ];
+        } else {
+            $response['dashboard'] = [
+                'type' => 'client',
+                'quick_actions' => [
+                    ['title' => 'Request New Funnel', 'url' => '/client/funnel-request'],
+                    ['title' => 'View Leads', 'url' => '/client/leads']
+                ]
+            ];
+        }
+
+        return response()->json($response);
     }
 }
