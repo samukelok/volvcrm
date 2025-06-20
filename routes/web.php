@@ -7,6 +7,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', [])->name('login');
+Route::get('/register', [])->name('register');
+
 // Admin dashboard (protected by admin middleware)
 Route::middleware(['auth:sanctum', 'admin'])->get('/admin', function (Request $request) {
     return view('dashboard.admin', [

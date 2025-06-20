@@ -23,7 +23,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_active' => true, // Explicitly set active status
+            'is_active' => true, 
         ]);
 
         $user->assignRole('client_user');
@@ -40,7 +40,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         
-        // Add manual user lookup and password verification
+        // Password validation
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user) {
@@ -58,7 +58,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Account is inactive'], 403);
         }
 
-        Auth::login($user); // Manually log in the user
+        Auth::login($user);
         Log::info('Login successful', ['user_id' => $user->id]);
 
         return response()->json([
@@ -84,7 +84,7 @@ class AuthController extends Controller
                     ['title' => 'Manage Clients', 'url' => '/admin/clients'],
                     ['title' => 'View Funnel Requests', 'url' => '/admin/funnel-requests']
                 ],
-                'stats' => [] // We'll populate this later
+                'stats' => [] // To populate this later
             ];
         } else {
             $response['dashboard'] = [
@@ -98,4 +98,12 @@ class AuthController extends Controller
 
         return response()->json($response);
     }
+
+    public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
+
 }
