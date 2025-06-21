@@ -47,7 +47,7 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => 120,
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ return [
     |
     */
 
-    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', 'fuse-'),
+    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', 'evolve-'),
 
     /*
     |--------------------------------------------------------------------------

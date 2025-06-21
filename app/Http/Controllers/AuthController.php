@@ -31,7 +31,7 @@ class AuthController extends Controller
         $user->assignRole('client_user');
 
         Auth::login($user); // Log the user in
-        $request->session()->regenerate(); 
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Registered and logged in successfully',
@@ -44,10 +44,15 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); 
+            $request->session()->regenerate();
+
+            $user = Auth::user()->load('roles');
+            $redirectTo = $user->hasRole('admin') ? '/admin' : '/dashboard';
+
             return response()->json([
                 'message' => 'Logged in',
-                'user' => Auth::user()->load('roles')
+                'user' => $user,
+                'redirect' => $redirectTo
             ]);
         }
 

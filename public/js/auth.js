@@ -4,23 +4,17 @@ axios.defaults.withCredentials = true;
 
 // Login function
 function loginUser(email, password) {
-    axios.get('/sanctum/csrf-cookie', { withCredentials: true })
-      .then(() => {
-        return axios.post('/api/login', {
-          email: email,
-          password: password
-        }, {
-          withCredentials: true
-        });
-      })
-      .then(res => {
-        console.log(res.data);
-        window.location.href = "/dashboard";
-      })
-      .catch(err => {
-        console.error(err.response.data);
-        alert("Login failed: " + (err.response?.data?.message || "Check credentials."));
-      });
+    axios.post('/api/login', {
+        email: email,
+        password: password
+    })
+    .then(response => {
+        const redirectUrl = response.data.redirect || '/dashboard';
+        window.location.href = redirectUrl;
+    })
+    .catch(error => {
+        alert("Login failed: " + (error.response?.data?.message || "Unknown error"));
+    });    
 }
 
 // Register function
