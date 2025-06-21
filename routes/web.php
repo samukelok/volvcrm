@@ -18,10 +18,16 @@ Route::get('/sanctum/csrf-cookie', function () {
 });
 
 // Admin dashboard (protected by admin middleware)
-Route::middleware(['auth:sanctum', 'admin'])->get('/admin', function (Request $request) {
+Route::middleware(['auth:sanctum'])->get('/admin', function (Request $request) {
+    $user = $request->user();
+
+    $dashboard = [
+        // Dashboard Data may Go Here
+    ];
+
     return view('dashboard.admin', [
-        'user' => $request->user(),
-        'dashboard' => $request->user()->dashboardData() 
+        'user' => $user,
+        'dashboard' => $dashboard
     ]);
 });
 
