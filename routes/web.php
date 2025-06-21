@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -7,8 +8,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', [])->name('login');
-Route::get('/register', [])->name('register');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+
+// Sanctum CSRF endpoint
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['csrf_cookie_set' => true]);
+});
 
 // Admin dashboard (protected by admin middleware)
 Route::middleware(['auth:sanctum', 'admin'])->get('/admin', function (Request $request) {
