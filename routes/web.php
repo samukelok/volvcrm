@@ -31,3 +31,11 @@ Route::middleware(['auth:sanctum'])->get('/dashboard', function (Request $reques
         'user' => $request->user()
     ]);
 });
+
+// API routes are called as web (cookies + session approach)
+Route::middleware(['web'])->group(function () {
+    Route::post('/api/login', [AuthController::class, 'login']);
+    Route::post('/api/register', [AuthController::class, 'register']);
+    Route::post('/api/logout', [AuthController::class, 'logout']);
+    Route::get('/api/me', [AuthController::class, 'me']);
+});

@@ -1,3 +1,7 @@
+// Set CSRF token for Axios
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.withCredentials = true;
+
 // Login function
 function loginUser(email, password) {
     axios.get('/sanctum/csrf-cookie', { withCredentials: true })
