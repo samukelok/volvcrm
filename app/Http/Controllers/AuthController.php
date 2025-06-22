@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use GuzzleHttp\Middleware;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 
 class AuthController extends Controller
@@ -30,12 +28,15 @@ class AuthController extends Controller
 
         $user->assignRole('client_user');
 
-        Auth::login($user); // Log the user in
+        // Send email verification
+        event(new Registered($user)); 
+
+        Auth::login($user);
         $request->session()->regenerate();
 
         return response()->json([
-            'message' => 'Registered and logged in successfully',
-            'user' => $user->load('roles')
+            'message' => 'Registered and logged in successfully. Please verify your email.',
+            'user' => $user->load('roles'),
         ]);
     }
 
