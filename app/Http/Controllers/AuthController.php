@@ -29,7 +29,7 @@ class AuthController extends Controller
         $user->assignRole('client_user');
 
         // Send email verification
-        event(new Registered($user)); 
+        event(new Registered($user));
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -93,7 +93,16 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // For API (token-based) logout
+        $token = $request->user()?->currentAccessToken();
+        if ($token) {
+            $token->delete();
+        }
+
+        // For session-based logout
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json(['message' => 'Logged out successfully']);
     }
