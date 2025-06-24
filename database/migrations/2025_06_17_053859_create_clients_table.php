@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('subdomain')->unique();
-            $table->string('database_name')->unique();
+            $table->string('domain')->unique();
             $table->string('status')->default('pending'); // pending, active, suspended
             $table->date('onboarded_at')->nullable();
             $table->json('branding')->nullable(); // colors, logo, etc.

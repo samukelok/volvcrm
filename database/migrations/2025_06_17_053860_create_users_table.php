@@ -24,6 +24,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreignId('client_id')->nullable()->constrained()->onDelete('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
