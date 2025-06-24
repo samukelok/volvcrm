@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TeamController;
+use App\Models\Role;
 
 Route::get('/', function () {
     return view('welcome');
@@ -65,6 +67,8 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name(
  * 
  * 
  */
+
+//  Main Page
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function (Request $request) {
     $user = $request->user();
     return view('dashboard.client', [
@@ -73,6 +77,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function (Req
     ]);
 });
 
+// Profile Page
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function () {
         $user = Auth::user(); 
@@ -81,6 +86,21 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+});
+
+// Team Members Page
+Route::middleware(['auth'])->group(function(){
+    Route::get('/team-members', function(){
+        $user = Auth::user();
+        $teamMembers = $user->client->users()->with('roles')->get();
+        $availableRoles = Role::where('name', '!=', 'admin')->get();
+        
+        return view('dashboard.members', compact('user', 'teamMembers', 'availableRoles'));
+    })->name('team');
+    
+    Route::post('/team-members/invite', [TeamController::class, 'invite'])->name('team.invite');
+    Route::put('/team-members/{user}/update-role', [TeamController::class, 'updateRole'])->name('team.update-role');
+    Route::delete('/team-members/{user}/remove', [TeamController::class, 'remove'])->name('team.remove');
 });
 
 /**
