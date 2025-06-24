@@ -18,14 +18,15 @@ function loginUser(email, password) {
 }
 
 // Register function
-function registerUser(name, email, password, passwordConfirmation) {
+function registerUser(name, email, password, passwordConfirmation, token) {
     axios.get('/sanctum/csrf-cookie', { withCredentials: true })
       .then(() => {
         return axios.post('/api/register', {
           name: name,
           email: email,
           password: password,
-          password_confirmation: passwordConfirmation
+          password_confirmation: passwordConfirmation,
+          token
         }, {
           withCredentials: true
         });
