@@ -13,8 +13,7 @@ class Client extends Model
 
     protected $fillable = [
         'name',
-        'subdomain',
-        'database_name',
+        'domain',
         'status',
         'onboarded_at',
         'branding',
@@ -25,13 +24,18 @@ class Client extends Model
         'branding' => 'array',
     ];
 
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('permissions');
+        return $this->hasMany(User::class);
     }
 
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
     }
 }

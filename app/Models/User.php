@@ -22,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'timezone',
         'avatar',
         'is_active',
+        'client_id',
     ];
 
     protected $hidden = [
@@ -39,10 +40,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Role::class);
     }
 
-    public function clients(): BelongsToMany
+    public function client()
     {
-        return $this->belongsToMany(Client::class)->withPivot('permissions');
+        return $this->belongsTo(Client::class);
     }
+
 
     public function hasRole(string $role): bool
     {
