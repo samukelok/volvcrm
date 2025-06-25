@@ -89,18 +89,34 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Team Members Page
-Route::middleware(['auth'])->group(function(){
-    Route::get('/team-members', function(){
+Route::middleware(['auth'])->group(function () {
+    Route::get('/team-members', function () {
         $user = Auth::user();
+
+        if (!$user->client) {
+            // No team yet – show only the logged-in user with a message
+            $teamMembers = collect([$user]);
+            $availableRoles = Role::where('name', '!=', 'admin')->get();
+
+            return view('dashboard.members', [
+                'user' => $user,
+                'teamMembers' => $teamMembers,
+                'availableRoles' => $availableRoles,
+                'noTeam' => true,
+            ]);
+        }
+
+        // Client exists – show full team
         $teamMembers = $user->client->users()->with('roles')->get();
         $availableRoles = Role::where('name', '!=', 'admin')->get();
-        
+
         return view('dashboard.members', compact('user', 'teamMembers', 'availableRoles'));
     })->name('team');
-    
+
     Route::post('/team-members/invite', [TeamController::class, 'invite'])->name('team.invite');
     Route::put('/team-members/{user}/update-role', [TeamController::class, 'updateRole'])->name('team.update-role');
     Route::delete('/team-members/{user}/remove', [TeamController::class, 'remove'])->name('team.remove');
+
 });
 
 /**
