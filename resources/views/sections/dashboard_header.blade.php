@@ -9,7 +9,8 @@
             <div class="dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="profileDropdown"
                     data-bs-toggle="dropdown">
-                    <div class="lead-avatar me-2">JS</div>
+                    <div class="lead-avatar me-2"><img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('img/user.png') }}"
+                             alt="Avatar"></div>
                     <span>{{ $user->name }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">

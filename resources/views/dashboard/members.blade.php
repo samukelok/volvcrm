@@ -12,24 +12,38 @@
         <div class="container-fluid">
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 mb-0 text-gray-800">Team Members</h1>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal">
-                    <i class="fas fa-user-plus me-2"></i> Invite Team Member
-                </button>
+
+                <p>Current Roles: {{ implode(', ', Auth::user()->roles->pluck('name')->toArray()) }}</p>
+
+                @if (Auth::user()->hasAnyRole(['client_admin', 'admin']))
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal">
+                        <i class="fas fa-user-plus me-2"></i> Invite Team Member
+                    </button>
+                @endif
+
             </div>
-            
-            @if(session('success'))
+
+            @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-            
-            @if(session('error'))
+
+            @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
+
+            @if (isset($noTeam) && $noTeam)
+                <div class="alert alert-info">
+                    You don't have a team yet. You're currently the only member.
+                    Invite team members to collaborate.
+                </div>
+            @endif
+
 
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -42,59 +56,93 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
+
+                                    @if (Auth::user()->hasAnyRole(['client_admin', 'admin']))
                                     <th>Role</th>
+                                    @endif
+
                                     <th>Status</th>
+
+                                    @if (Auth::user()->hasAnyRole(['client_admin', 'admin', 'client_user']))
                                     <th>Actions</th>
+                                    @endif
+                                    
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($teamMembers as $member)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar me-2">
-                                                {{ strtoupper(substr($member->name, 0, 1)) }}
+                                @foreach ($teamMembers as $member)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar me-2">
+                                                    {{ strtoupper(substr($member->name, 0, 1)) }}
+                                                </div>
+                                                <span>{{ $member->name }}</span>
                                             </div>
-                                            <span>{{ $member->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td>{{ $member->email }}</td>
-                                    <td>
-                                        @if($member->id === $user->id)
-                                            <span class="badge bg-primary">You</span>
-                                        @else
-                                            <form class="role-form" action="{{ route('team.update-role', $member) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <select name="role" class="form-select form-select-sm" {{ $member->id === $user->id ? 'disabled' : '' }}>
-                                                    @foreach($availableRoles as $role)
-                                                        <option value="{{ $role->name }}" {{ $member->hasRole($role->name) ? 'selected' : '' }}>
-                                                            {{ ucfirst($role->name) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </form>
+                                        </td>
+                                        <td>{{ $member->email }}</td>
+
+                                        @if (Auth::user()->hasAnyRole(['client_admin', 'admin']))
+                                        <td>
+                                            @if ($member->id === $user->id)
+                                                <span class="badge bg-primary">You</span>
+                                            @else
+                                                <form class="role-form" action="{{ route('team.update-role', $member) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <select name="role" class="form-select form-select-sm"
+                                                        {{ $member->id === $user->id ? 'disabled' : '' }}>
+                                                        @foreach ($availableRoles as $role)
+                                                            <option value="{{ $role->name }}"
+                                                                {{ $member->hasRole($role->name) ? 'selected' : '' }}>
+                                                                {{ ucfirst($role->name) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </form>
+                                            @endif
+                                        </td>
                                         @endif
-                                    </td>
-                                    <td>
-                                        @if($member->email_verified_at)
-                                            <span class="badge bg-success">Active</span>
-                                        @else
-                                            <span class="badge bg-warning">Pending</span>
+
+                                        <td>
+                                            @if ($member->email_verified_at)
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-warning">Pending</span>
+                                            @endif
+                                        </td>
+
+                                        @if (Auth::user()->hasAnyRole(['client_admin', 'admin']))
+                                        <td>
+                                            @if ($member->id !== $user->id)
+                                                <form action="{{ route('team.remove', $member) }}" method="POST"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Are you sure you want to remove this team member?')">
+                                                        <i class="fas fa-trash"></i> Remove
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                         @endif
-                                    </td>
-                                    <td>
-                                        @if($member->id !== $user->id)
-                                            <form action="{{ route('team.remove', $member) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this team member?')">
-                                                    <i class="fas fa-trash"></i> Remove
-                                                </button>
-                                            </form>
+                                        
+                                        {{-- Client User's Actions Column --}}
+                                        @if (Auth::user()->hasAnyRole(['client_user']))
+                                        <td>
+                                            @if ($member->id !== $user->id)
+                                                
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('You Don\'t Have Permission To This Action')">
+                                                        <i class="fas fa-trash"></i> Remove
+                                                    </button>
+                                                
+                                            @endif
+                                        </td>
                                         @endif
-                                    </td>
-                                </tr>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -123,7 +171,7 @@
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" name="role" required>
                                 <option value="">Select a role</option>
-                                @foreach($availableRoles as $role)
+                                @foreach ($availableRoles as $role)
                                     <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
                                 @endforeach
                             </select>
@@ -140,12 +188,12 @@
 @endsection
 
 @push('scripts')
-<script>
-    // Auto-submit form when role is changed
-    document.querySelectorAll('.role-form select').forEach(select => {
-        select.addEventListener('change', function() {
-            this.closest('form').submit();
+    <script>
+        // Auto-submit form when role is changed
+        document.querySelectorAll('.role-form select').forEach(select => {
+            select.addEventListener('change', function() {
+                this.closest('form').submit();
+            });
         });
-    });
-</script>
+    </script>
 @endpush
