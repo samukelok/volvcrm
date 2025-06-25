@@ -45,6 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Client::class);
     }
 
+    public function getPrimaryRoleAttribute()
+    {
+        return $this->roles()->first();
+    }
 
     public function hasRole(string $role): bool
     {
@@ -59,6 +63,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function assignRole(string $role): void
     {
         $role = Role::whereName($role)->firstOrFail();
-        $this->roles()->syncWithoutDetaching($role);
+        $this->roles()->sync([$role->id]);
     }
+
+    public function getAllPermissionsAttribute()
+    {
+        return $this->roles->flatMap(function ($role) {
+            return $role->permissions ?? [];
+        })->unique()->values();
+    }
+
 }

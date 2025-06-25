@@ -11,8 +11,6 @@ use Illuminate\Support\Str;
 
 class TeamController extends Controller
 {
-    // app/Http/Controllers/TeamController.php
-
     public function invite(Request $request)
     {
         $request->validate([
