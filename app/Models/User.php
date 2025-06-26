@@ -72,5 +72,4 @@ class User extends Authenticatable implements MustVerifyEmail
             return $role->permissions ?? [];
         })->unique()->values();
     }
-
 }
