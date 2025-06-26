@@ -15,8 +15,6 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        Log::debug('Full form data:', $request->all());
-
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -75,12 +73,6 @@ class AuthController extends Controller
         // Assign role
         $user->assignRole($roleName);
         logger("Role assigned to user: $roleName");
-
-        // Delete invitation after use
-        if ($invitation) {
-            $invitation->delete();
-            logger('Invitation deleted after successful registration.');
-        }
 
         // Trigger registration event
         event(new Registered($user));
