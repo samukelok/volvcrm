@@ -22,14 +22,7 @@ class AuthController extends Controller
             'token' => 'nullable|string'
         ]);
 
-        // Log the incoming request data
-        logger('--- Register Request ---');
-        logger('Name: ' . $request->name);
-        logger('Email: ' . $request->email);
-        logger('Token: ' . $request->token);
-
         $token = $request->input('token');
-        Log::debug('Token: ' . $token);
 
         $invitation = null;
         $clientId = null;
@@ -37,14 +30,11 @@ class AuthController extends Controller
 
         // Check if token is present
         if ($request->filled('token')) {
-            logger('Token provided, attempting to find matching invitation...');
 
             $invitation = Invitation::where('token', $request->token)
                 ->where('email', $request->email)
                 ->where('expires_at', '>', now())
                 ->first();
-
-            logger('Invitation found: ' . json_encode($invitation));
 
             if (!$invitation) {
                 logger('Invitation not found or expired.');
@@ -54,7 +44,6 @@ class AuthController extends Controller
             $clientId = $invitation->client_id;
             $roleName = $invitation->role ?? 'client_user';
 
-            logger("Extracted client_id: $clientId and role: $roleName from invitation.");
         } else {
             logger('No token provided, proceeding without invitation.');
         }
@@ -72,7 +61,6 @@ class AuthController extends Controller
 
         // Assign role
         $user->assignRole($roleName);
-        logger("Role assigned to user: $roleName");
 
         // Trigger registration event
         event(new Registered($user));
@@ -80,7 +68,6 @@ class AuthController extends Controller
         // Authenticate the user
         Auth::login($user);
         $request->session()->regenerate();
-        logger('User logged in and session regenerated.');
 
         return response()->json([
             'message' => 'Registered and logged in successfully. Please verify your email.',
