@@ -73,6 +73,7 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name(
 // Client/Company Onboarding
 Route::get('/onboarding', [ClientOnboardingController::class, 'show'])->name('client.onboarding');
 Route::post('/onboarding', [ClientOnboardingController::class, 'store'])->name('client.onboarding.store');
+
 Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->name('client.verify.domain');
 
 /**
