@@ -50,8 +50,8 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirm = document.getElementById('password_confirmation').value;
-            const invitetoken = document.getElementById('token').value;
-            registerUser(name, email, password, confirm, invitetoken);
+            
+            registerUser(name, email, password, confirm);
         });
     </script>
 @endsection
