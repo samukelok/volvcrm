@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,10 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\ClientOnboardingController;
+use App\Http\Controllers\DomainVerificationController;
+    use App\Models\Invitation;
+
 use App\Models\Role;
 
 Route::get('/', function () {
@@ -33,11 +38,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 
-    // Verify the email
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill(); 
-        return redirect('/dashboard');
-    })->middleware(['signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    // Remove invitation if it exists
+    Invitation::where('email', $request->user()->email)->delete();
+
+    // Redirect conditionally
+    $redirectTo = $request->query('redirectTo', '/dashboard');
+
+    return redirect($redirectTo);
+})->middleware(['signed'])->name('verification.verify');
+
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {
@@ -57,6 +69,11 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 // Reset password form
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+// Client/Company Onboarding
+Route::get('/onboarding', [ClientOnboardingController::class, 'show'])->name('client.onboarding');
+Route::post('/onboarding', [ClientOnboardingController::class, 'store'])->name('client.onboarding.store');
+Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->name('client.verify.domain');
 
 /**
  * 
@@ -80,8 +97,8 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function (Req
 // Profile Page
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function () {
-        $user = Auth::user(); 
-        return view('dashboard.profile', compact('user')); 
+        $user = Auth::user();
+        return view('dashboard.profile', compact('user'));
     })->name('profile');
 
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -116,7 +133,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/team-members/invite', [TeamController::class, 'invite'])->name('team.invite');
     Route::put('/team-members/{user}/update-role', [TeamController::class, 'updateRole'])->name('team.update-role');
     Route::delete('/team-members/{user}/remove', [TeamController::class, 'remove'])->name('team.remove');
-
 });
 
 /**
@@ -152,4 +168,3 @@ Route::middleware(['web'])->group(function () {
     Route::post('/api/logout', [AuthController::class, 'logout']);
     Route::get('/api/me', [AuthController::class, 'me']);
 });
-
