@@ -74,7 +74,7 @@ class TeamController extends Controller
             return back()->with('error', 'You cannot remove yourself from the team.');
         }
 
-        // Remove user from client (assuming you have a client_user pivot table)
+        // Remove user from client
         $user->client_id = null;
         $user->save();
 
