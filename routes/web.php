@@ -71,8 +71,13 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Client/Company Onboarding
-Route::get('/onboarding', [ClientOnboardingController::class, 'show'])->name('client.onboarding');
-Route::post('/onboarding', [ClientOnboardingController::class, 'store'])->name('client.onboarding.store');
+Route::get('/onboarding', [ClientOnboardingController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('client.onboarding');
+
+Route::post('/onboarding', [ClientOnboardingController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('client.onboarding.store');
 
 Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->name('client.verify.domain');
 
@@ -93,7 +98,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function (Req
         'user' => $user,
         'dashboard' => []
     ]);
-});
+})->name('dashboard');
 
 // Profile Page
 Route::middleware(['auth'])->group(function () {
