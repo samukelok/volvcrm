@@ -22,7 +22,7 @@ class ClientUserSeeder extends Seeder
             'branding' => '#4e73df',
         ]);
 
-        // Create a specific user and link to client
+        // Create a specific user and link to client: 
         $adminUser = User::create([
             'name' => 'John Doe',
             'email' => 'admin@testclient.local',
