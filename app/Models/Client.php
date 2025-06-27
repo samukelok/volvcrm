@@ -12,8 +12,8 @@ class Client extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'domain',
+        'brand_name',
+        'website',
         'status',
         'onboarded_at',
         'branding',
