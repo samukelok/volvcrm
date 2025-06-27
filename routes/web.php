@@ -11,7 +11,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ClientOnboardingController;
 use App\Http\Controllers\DomainVerificationController;
-    use App\Models\Invitation;
+use App\Services\CpanelService;
+use App\Models\Invitation;
 
 use App\Models\Role;
 
@@ -38,17 +39,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
 
-    // Remove invitation if it exists
-    Invitation::where('email', $request->user()->email)->delete();
+        // Remove invitation if it exists
+        Invitation::where('email', $request->user()->email)->delete();
 
-    // Redirect conditionally
-    $redirectTo = $request->query('redirectTo', '/dashboard');
+        // Redirect conditionally
+        $redirectTo = $request->query('redirectTo', '/dashboard');
 
-    return redirect($redirectTo);
-})->middleware(['signed'])->name('verification.verify');
+        return redirect($redirectTo);
+    })->middleware(['signed'])->name('verification.verify');
 
 
     // Resend verification email
@@ -71,6 +72,12 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Client/Company Onboarding
+Route::get('/add-wildcard', function () {
+    $cpanel = new CpanelService();
+    $response = $cpanel->createWildcardDNSRecord('bluenroll.co.za', '216.126.194.27');
+    dd($response);
+});
+
 Route::get('/onboarding', [ClientOnboardingController::class, 'show'])
     ->middleware(['auth', 'verified'])
     ->name('client.onboarding');
