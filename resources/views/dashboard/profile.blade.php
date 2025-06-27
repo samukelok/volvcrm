@@ -50,6 +50,18 @@
                 </form>
 
                 <hr class="my-4">
+                {{-- Display Client Name & Verification Status --}}
+                <div class="mb-3">
+                    <h5>Company Name: {{ Auth::user()->client->brand_name ?? 'N/A' }}</h5>
+                    <p>Status: 
+                        @if (Auth::user()->client && Auth::user()->client->status === 'verified')
+                            <span class="text-success">Verified</span>
+                        @else
+                            <span class="text-warning">Pending Verification</span>
+                        @endif
+                    </p>
+
+                <hr class="my-4">
 
                 {{-- Change Password --}}
                 <form method="POST" action="{{ route('profile.password') }}">
