@@ -17,15 +17,16 @@ class ClientUserSeeder extends Seeder
     public function run()
     {
         $client = Client::create([
-            'name' => 'Test Client',
-            'domain' => 'testclient.local',
+            'brand_name' => 'Sphe',
+            'domain' => 'sphe.com',
+            'subdomain' => 'sphe',
             'branding' => '#4e73df',
         ]);
 
         // Create a specific user and link to client: 
         $adminUser = User::create([
-            'name' => 'John Doe',
-            'email' => 'admin@testclient.local',
+            'name' => 'Sphelele Ngcobo',
+            'email' => 'admin@sphe.com',
             'password' => bcrypt('password'),
             'client_id' => $client->id,
         ]);

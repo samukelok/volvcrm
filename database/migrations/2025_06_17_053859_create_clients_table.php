@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('brand_name');
             $table->string('domain')->unique();
+            $table->string('subdomain')->unique(); // e.g. "vinesolar"
             $table->string('status')->default('pending'); // pending, active, suspended
             $table->date('onboarded_at')->nullable();
-            $table->json('branding')->nullable(); // colors, logo, etc.
+            $table->json('branding')->nullable(); // colors
             $table->timestamps();
             $table->softDeletes();
         });
