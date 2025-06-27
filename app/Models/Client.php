@@ -14,6 +14,7 @@ class Client extends Model
     protected $fillable = [
         'brand_name',
         'website',
+        'subdomain',
         'status',
         'onboarded_at',
         'branding',

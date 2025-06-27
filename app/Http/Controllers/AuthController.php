@@ -22,8 +22,6 @@ class AuthController extends Controller
             'token' => 'nullable|string'
         ]);
 
-        $token = $request->input('token');
-
         $invitation = null;
         $clientId = null;
         $roleName = 'client_user';
@@ -56,8 +54,6 @@ class AuthController extends Controller
             'is_active' => true,
             'client_id' => $clientId,
         ]);
-
-        logger('User created: ' . json_encode($user));
 
         // Assign role
         $user->assignRole($roleName);

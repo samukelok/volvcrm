@@ -30,4 +30,20 @@ class CpanelService
 
         return $response->json();
     }
+
+    public function createWildcardDNSRecord($domain = 'bluenroll.co.za', $ip = '216.126.194.27')
+    {
+        $endpoint = "{$this->cpanelHost}/execute/ZoneEdit/add_zone_record";
+
+        $response = Http::withBasicAuth($this->cpanelUser, $this->cpanelPass)
+            ->get($endpoint, [
+                'domain' => $domain,
+                'name' => '*.' . $domain . '.', 
+                'type' => 'A',
+                'address' => $ip,
+                'ttl' => '14400',
+            ]);
+
+        return $response->json();
+    }
 }
