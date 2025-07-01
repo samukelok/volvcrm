@@ -1,12 +1,7 @@
-Options -Indexes
-
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Redirect trailing slashes
-    RewriteRule ^(.*)/$ /$1 [L,R=301]
-
-    # Handle Laravel routes
+    # Redirect all requests to index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
