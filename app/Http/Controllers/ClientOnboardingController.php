@@ -62,7 +62,7 @@ class ClientOnboardingController extends Controller
             $cpanel->createSubdomain($subdomain);
 
             // 6. Redirect to new subdomain dashboard
-            $dashboardUrl = "https://{$subdomain}.bluenroll.co.za/dashboard";
+            $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
             return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
 
         } catch (\Exception $e) {

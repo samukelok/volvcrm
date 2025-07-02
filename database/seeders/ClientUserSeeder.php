@@ -18,7 +18,7 @@ class ClientUserSeeder extends Seeder
     {
         $client = Client::create([
             'brand_name' => 'Sphe',
-            'domain' => 'sphe.com',
+            'website' => 'sphe.com',
             'subdomain' => 'sphe',
             'branding' => '#4e73df',
         ]);

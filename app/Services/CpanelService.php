@@ -17,7 +17,7 @@ class CpanelService
         $this->cpanelHost = env('CPANEL_HOST');
     }
 
-    public function createSubdomain($subdomain, $domain = 'bluenroll.co.za')
+    public function createSubdomain($subdomain, $domain = 'cyberkru.com')
     {
         $endpoint = "{$this->cpanelHost}/execute/SubDomain/addsubdomain";
 
@@ -31,7 +31,7 @@ class CpanelService
         return $response->json();
     }
 
-    public function createWildcardDNSRecord($domain = 'bluenroll.co.za', $ip = '216.126.194.27')
+    public function createWildcardDNSRecord($domain = 'cyberkru.com', $ip = '170.10.163.46')
     {
         $endpoint = "{$this->cpanelHost}/execute/ZoneEdit/add_zone_record";
 
