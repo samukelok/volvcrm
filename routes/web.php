@@ -33,6 +33,8 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 Route::middleware(['auth:sanctum'])->group(function () {
     // Show email verification notice
     Route::get('/email/verify', function () {
@@ -46,7 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Invitation::where('email', $request->user()->email)->delete();
 
         // Redirect conditionally
-        $redirectTo = $request->query('redirectTo', '/dashboard');
+        $redirectTo = $request->query('redirectTo', '/client');
 
         return redirect($redirectTo);
     })->middleware(['signed'])->name('verification.verify');
@@ -103,9 +105,11 @@ Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->n
 Route::middleware(['auth:sanctum', 'verified'])->get('/client/{any?}', function (Request $request) {
     return view('dashboard.client', [
         'user' => $request->user(),
+        'client' => $request->user()->client,
+        'flash' => session('success'),
         'dashboard' => []
     ]);
-})->where('any', '.*')->name('client.dashboard');
+})->where('any', '.*')->name('client');
 
 // Profile Page
 Route::middleware(['auth'])->group(function () {
