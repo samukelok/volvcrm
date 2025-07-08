@@ -79,7 +79,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user()->load('roles');
-            $redirectTo = $user->hasRole('admin') ? '/admin' : '/dashboard';
+            $redirectTo = $user->hasRole('admin') ? '/admin' : '/client';
 
             return response()->json([
                 'message' => 'Logged in',

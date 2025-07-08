@@ -99,13 +99,13 @@ Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->n
  */
 
 //  Main Page
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function (Request $request) {
-    $user = $request->user();
+// Client SPA catch-all
+Route::middleware(['auth:sanctum', 'verified'])->get('/client/{any?}', function (Request $request) {
     return view('dashboard.client', [
-        'user' => $user,
+        'user' => $request->user(),
         'dashboard' => []
     ]);
-})->name('dashboard');
+})->where('any', '.*')->name('client.dashboard');
 
 // Profile Page
 Route::middleware(['auth'])->group(function () {
@@ -157,13 +157,13 @@ Route::middleware(['auth'])->group(function () {
  * 
  * 
  */
-Route::middleware(['auth:sanctum', 'verified'])->get('/admin', function (Request $request) {
-    $user = $request->user();
+// Admin SPA catch-all
+Route::middleware(['auth:sanctum', 'verified'])->get('/admin/{any?}', function (Request $request) {
     return view('admin.admin', [
-        'user' => $user,
+        'user' => $request->user(),
         'dashboard' => []
     ]);
-});
+})->where('any', '.*');
 
 /**
  * 

@@ -57,13 +57,14 @@ class ClientOnboardingController extends Controller
             // 4. Link client to user
             $user->update(['client_id' => $client->id]);
 
-            // 5. Create subdomain via cPanel
-            $cpanel = new CpanelService();
-            $cpanel->createSubdomain($subdomain);
+            // // 5. Create subdomain via cPanel
+            // $cpanel = new CpanelService();
+            // $cpanel->createSubdomain($subdomain);
 
             // 6. Redirect to new subdomain dashboard
             $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
-            return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
+            // return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
+            return redirect()->route('dashboard')->with('success', 'Account created successfully! Welcome to VolvCRM!');
 
         } catch (\Exception $e) {
             Log::error('Client creation failed', [
