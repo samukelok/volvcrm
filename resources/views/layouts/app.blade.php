@@ -10,9 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center">
+
         @yield('content')
-    </div>
+
     <script src="{{ asset('js/auth.js') }}"></script>
 
     @yield('scripts')
