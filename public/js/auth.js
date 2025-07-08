@@ -9,7 +9,7 @@ function loginUser(email, password) {
         password: password
     })
     .then(response => {
-        const redirectUrl = response.data.redirect || '/dashboard';
+        const redirectUrl = response.data.redirect || '/client';
         window.location.href = redirectUrl;
     })
     .catch(error => {
@@ -33,7 +33,7 @@ function registerUser(name, email, password, passwordConfirmation, token) {
       })
       .then(res => {
         console.log(res.data);
-        window.location.href = "/dashboard";
+        window.location.href = "/client";
       })
       .catch(err => {
         console.error(err.response.data);

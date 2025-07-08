@@ -1,11 +1,18 @@
 {
   "index.html": {
-    "file": "assets/index-B7aiWbVU.js",
+    "file": "assets/index-Bw-0D-B0.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "css": [
       "assets/index-DeN2qDh7.css"
+    ],
+    "assets": [
+      "assets/logo-DD-iEwE1.png"
     ]
+  },
+  "src/assets/img/logo.png": {
+    "file": "assets/logo-DD-iEwE1.png",
+    "src": "src/assets/img/logo.png"
   }
 }
