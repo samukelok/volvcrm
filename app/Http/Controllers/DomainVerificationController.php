@@ -20,7 +20,7 @@ public function verify(Request $request)
 
     if ($verified) {
         $client->update(['status' => 'verified']);
-        return redirect()->route('dashboard')->with('success', 'Domain verified! You can now use all features.');
+        return redirect()->route('client')->with('success', 'Domain verified! You can now use all features.');
     }
 
     return back()->with('error', 'Verification failed. Please add the TXT record and try again.');

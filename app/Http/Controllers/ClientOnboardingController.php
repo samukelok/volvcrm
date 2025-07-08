@@ -23,7 +23,7 @@ class ClientOnboardingController extends Controller
         $user = Auth::user();
 
         if ($user->client_id) {
-            return redirect()->route('dashboard')->with('info', 'You already have a client.');
+            return redirect()->route('client')->with('info', 'You already have a client.');
         }
 
         $request->validate([
@@ -64,7 +64,7 @@ class ClientOnboardingController extends Controller
             // 6. Redirect to new subdomain dashboard
             $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
             // return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
-            return redirect()->route('dashboard')->with('success', 'Account created successfully! Welcome to VolvCRM!');
+            return redirect()->route('client')->with('success', 'Account created successfully! Welcome to VolvCRM!');
 
         } catch (\Exception $e) {
             Log::error('Client creation failed', [

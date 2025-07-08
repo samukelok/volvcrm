@@ -41,7 +41,6 @@ class AuthController extends Controller
 
             $clientId = $invitation->client_id;
             $roleName = $invitation->role ?? 'client_user';
-
         } else {
             logger('No token provided, proceeding without invitation.');
         }
@@ -80,6 +79,8 @@ class AuthController extends Controller
 
             $user = Auth::user()->load('roles');
             $redirectTo = $user->hasRole('admin') ? '/admin' : '/client';
+
+            session()->flash('success', 'Welcome Back :)');
 
             return response()->json([
                 'message' => 'Logged in',
@@ -135,8 +136,9 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return redirect()->route('login')->with('success', 'You have been logged out successfully.');
     }
+
 
     public function showLoginForm()
     {
