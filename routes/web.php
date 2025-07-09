@@ -150,6 +150,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/team-members/invite', [TeamController::class, 'invite'])->name('team.invite');
     Route::put('/team-members/{user}/update-role', [TeamController::class, 'updateRole'])->name('team.update-role');
     Route::delete('/team-members/{user}/remove', [TeamController::class, 'remove'])->name('team.remove');
+
+    // API routes for team management
+    Route::get('/team-members/data', function () {
+        $user = Auth::user();
+        $teamMembers = $user->client ? $user->client->users()->with('roles')->get() : collect([$user]);
+        $availableRoles = Role::where('name', '!=', 'admin')->get();
+
+        return response()->json([
+            'teamMembers' => $teamMembers,
+            'availableRoles' => $availableRoles,
+            'client' => $user->client ?? null
+        ]);
+    })->middleware('auth');
 });
 
 /**
