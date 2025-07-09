@@ -42,7 +42,7 @@ class TeamController extends Controller
             $request->role
         ));
 
-        return back()->with('success', 'Invitation sent successfully!');
+        return response()->json(['flash' => 'Invitation sent successfully :)']);
     }
 
     public function updateRole(User $user, Request $request)
@@ -58,7 +58,9 @@ class TeamController extends Controller
         $role = Role::where('name', $request->role)->first();
         $user->roles()->attach($role);
 
-        return back()->with('success', 'Role updated successfully!');
+        session()->flash('success', 'Role updated successfully!');
+
+        return response()->json(['flash' => 'Role updated successfully!']);
     }
 
     public function remove(User $user)
@@ -71,13 +73,13 @@ class TeamController extends Controller
         // Don't allow removing yourself
         if ($user->id === request()->user()->id) {
 
-            return back()->with('error', 'You cannot remove yourself from the team.');
+            return response()->json(['flash' => 'You cannot remove yourself from the team.'], 400);
         }
 
         // Remove user from client
         $user->client_id = null;
         $user->save();
 
-        return back()->with('success', 'Team member removed successfully.');
+        return response()->json(['flash' => 'Team member removed successfully :)']);
     }
 }
