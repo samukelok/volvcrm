@@ -22,7 +22,8 @@
 
     <script>
         window.__USER__ = @json($user);
-        window.__CLIENT__ = @json($client);
+        window.__CLIENT__ = @json(Auth::user()->client ?? null);
         window.__FLASH__ = @json($flash);
+
     </script>
 @endsection
