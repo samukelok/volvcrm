@@ -26,7 +26,7 @@ function registerUser(name, email, password, passwordConfirmation, token) {
           email: email,
           password: password,
           password_confirmation: passwordConfirmation,
-          token
+          token: token
         }, {
           withCredentials: true
         });

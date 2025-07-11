@@ -22,12 +22,17 @@ class AuthController extends Controller
             'token' => 'nullable|string'
         ]);
 
+        // Log all form data for debugging
+        Log::info('Registration request data:', $request->all());
+
         $invitation = null;
         $clientId = null;
-        $roleName = 'client_user';
+        $roleName = 'client_admin'; // Default role for new users
 
         // Check if token is present
         if ($request->filled('token')) {
+
+            logger('Token provided, checking invitation.');
 
             $invitation = Invitation::where('token', $request->token)
                 ->where('email', $request->email)
@@ -41,6 +46,10 @@ class AuthController extends Controller
 
             $clientId = $invitation->client_id;
             $roleName = $invitation->role ?? 'client_user';
+
+            // Log assigned client and role
+            logger("Assigned client ID: {$clientId}, role: {$roleName}");
+
         } else {
             logger('No token provided, proceeding without invitation.');
         }
@@ -53,6 +62,9 @@ class AuthController extends Controller
             'is_active' => true,
             'client_id' => $clientId,
         ]);
+
+        // Log user creation and assigned role with client ID
+        logger("User created: {$user->id}, assigned role: {$roleName}, client ID: {$clientId}");
 
         // Assign role
         $user->assignRole($roleName);

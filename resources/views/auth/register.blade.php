@@ -165,8 +165,9 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirm = document.getElementById('password_confirmation').value;
+            const token = document.getElementById('token') ? document.getElementById('token').value : null;
             
-            registerUser(name, email, password, confirm);
+            registerUser(name, email, password, confirm, token);
         });
     </script>
 @endsection
