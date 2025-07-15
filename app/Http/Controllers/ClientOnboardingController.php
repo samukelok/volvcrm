@@ -30,6 +30,7 @@ class ClientOnboardingController extends Controller
             'brand_name' => 'required|string|max:255',
             'website' => 'nullable|url',
             'branding' => 'nullable|string',
+            'company_email' => 'nullable|email|max:255'
         ]);
 
         try {
@@ -48,6 +49,7 @@ class ClientOnboardingController extends Controller
             $client = Client::create([
                 'brand_name' => $request->brand_name,
                 'website' => $request->website,
+                'company_email' => $request->company_email,
                 'branding' => $request->branding,
                 'subdomain' => $subdomain,
                 'status' => 'pending',

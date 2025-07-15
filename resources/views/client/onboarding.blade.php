@@ -112,7 +112,7 @@
 
                     <div>
                         <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
-                            Website URL *
+                            Website URL
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -124,13 +124,40 @@
                                 type="url" 
                                 id="website" 
                                 name="website" 
-                                value="{{ old('website') }}"
-                                required 
+                                value="{{ old('website') }}" 
                                 class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 bg-white/50 backdrop-blur-sm"
                                 placeholder="https://yourcompany.com"
                             >
                         </div>
                         <p class="mt-1 text-xs text-gray-500">Your main business website</p>
+                    </div>
+
+
+
+
+
+
+                    <div>
+                        <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                            Company Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="company_email" 
+                                name="company_email" 
+                                value="{{ old('website') }}"
+                                 
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 bg-white/50 backdrop-blur-sm"
+                                placeholder="support@yourcompany.com"
+                            >
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Your company email address for enquiries</p>
                     </div>
                 </div>
 
@@ -243,6 +270,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const colorPicker = document.getElementById('branding_color');
     const textInput = document.getElementById('branding_text');
+    const companyEmailInput = document.getElementById('company_email');
+
+    companyEmailInput.addEventListener('input', function() {
+        // Update the hidden input that actually gets submitted
+        document.querySelector('input[name="company_email"]').value = this.value;
+    });
     
     // Update text input when color picker changes
     colorPicker.addEventListener('input', function() {
