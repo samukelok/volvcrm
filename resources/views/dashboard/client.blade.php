@@ -25,5 +25,7 @@
         window.__CLIENT__ = @json(Auth::user()->client ?? null);
         window.__FLASH__ = @json($flash);
 
+        console.log('Flash message:', window.__FLASH__);
+
     </script>
 @endsection
