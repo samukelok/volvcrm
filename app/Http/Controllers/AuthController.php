@@ -31,7 +31,6 @@ class AuthController extends Controller
 
         // Check if token is present
         if ($request->filled('token')) {
-
             logger('Token provided, checking invitation.');
 
             $invitation = Invitation::where('token', $request->token)
@@ -41,7 +40,10 @@ class AuthController extends Controller
 
             if (!$invitation) {
                 logger('Invitation not found or expired.');
-                return response()->json(['message' => 'Invalid or expired invitation token.'], 422);
+                return response()->json([
+                    'flash' => 'Invalid or expired invitation token.',
+                    'type' => 'error'
+                ], 422);
             }
 
             $clientId = $invitation->client_id;
@@ -49,41 +51,63 @@ class AuthController extends Controller
 
             // Log assigned client and role
             logger("Assigned client ID: {$clientId}, role: {$roleName}");
-
         } else {
             logger('No token provided, proceeding without invitation.');
         }
 
-        // Create user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_active' => true,
-            'client_id' => $clientId,
-        ]);
+        try {
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'is_active' => true,
+                'client_id' => $clientId,
+            ]);
 
-        // Log user creation and assigned role with client ID
-        logger("User created: {$user->id}, assigned role: {$roleName}, client ID: {$clientId}");
+            // Log user creation and assigned role with client ID
+            logger("User created: {$user->id}, assigned role: {$roleName}, client ID: {$clientId}");
 
-        // Assign role
-        $user->assignRole($roleName);
+            // Assign role
+            $user->assignRole($roleName);
 
-        // Trigger registration event
-        event(new Registered($user));
+            // Trigger registration event
+            event(new Registered($user));
 
-        // Authenticate the user
-        Auth::login($user);
-        $request->session()->regenerate();
+            // Authenticate the user
+            Auth::login($user);
+            $request->session()->regenerate();
 
-        return response()->json([
-            'message' => 'Registered and logged in successfully. Please verify your email.',
-            'user' => $user->load('roles'),
-        ]);
+            // Store flash message in session for redirect
+            session()->flash('success', ':) Welcome to VolvCRM.');
+
+            return response()->json([
+                'flash' => ':) Welcome to VolvCRM.',
+                'user' => $user->load('roles'),
+                'redirect' => $user->hasRole('admin') ? '/admin' : '/client'
+            ]);
+
+        } catch (\Exception $e) {
+            logger('Registration failed: ' . $e->getMessage());
+            return response()->json([
+                'flash' => 'Registration failed. Please try again.',
+                'type' => 'error'
+            ], 500);
+        }
     }
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
@@ -92,16 +116,23 @@ class AuthController extends Controller
             $user = Auth::user()->load('roles');
             $redirectTo = $user->hasRole('admin') ? '/admin' : '/client';
 
-            session()->flash('success', 'Welcome Back :)');
+            // Store flash message in session for redirect
+            session()->flash('success', 'Welcome back! ');
+
+            // Store flash message in session for redirect
+            session()->flash('success', 'Welcome back!');
 
             return response()->json([
-                'message' => 'Logged in',
+                'flash' => 'Welcome back! ',
                 'user' => $user,
                 'redirect' => $redirectTo
             ]);
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json([
+            'flash' => 'Invalid email or password. Please try again.',
+            'type' => 'error'
+        ], 401);
     }
 
     public function me(Request $request)
@@ -137,20 +168,46 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // For API (token-based) logout
-        $token = $request->user()?->currentAccessToken();
-        if ($token) {
-            $token->delete();
+        try {
+        try {
+            // For API (token-based) logout
+            $token = $request->user()?->currentAccessToken();
+            if ($token) {
+                $token->delete();
+            }
+
+            // For session-based logout
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            // Store flash message in session for redirect
+            session()->flash('success', 'You have been logged out successfully.');
+
+            return response()->json([
+                'flash' => 'You have been logged out successfully.',
+                'redirect' => '/login'
+            ]);
+
+        } catch (\Exception $e) {
+            logger('Logout failed: ' . $e->getMessage());
+            return response()->json([
+                'flash' => 'Logout failed. Please try again.',
+                'type' => 'error'
+            ], 500);
         }
 
-        // For session-based logout
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login')->with('success', 'You have been logged out successfully.');
+            return response()->json([
+                'redirect' => $redirectTo
+            ]);
+        } catch (\Exception $e) {
+            logger('Logout failed: ' . $e->getMessage());
+            return response()->json([
+                'flash' => 'Logout failed. Please try again.',
+                'type' => 'error'
+            ], 500);
+        }
     }
-
 
     public function showLoginForm()
     {
