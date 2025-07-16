@@ -10,15 +10,11 @@ use App\Models\User;
 
 class ProfileController extends Controller
 {
-    public function update(Request $request)
+    public function updateAvatar(Request $request)
     {
         $user = Auth::user();
-        if (!$user instanceof \App\Models\User) {
-            $user = User::find(Auth::id());
-        }
 
         $request->validate([
-            'name' => 'required|string|max:255',
             'avatar' => 'nullable|image|max:2048',
         ]);
 
@@ -31,10 +27,15 @@ class ProfileController extends Controller
             $user->avatar = $avatarPath;
         }
 
-        $user->name = $request->name;
         $user->save();
 
-        return back()->with('success', 'Profile updated successfully!');
+        // Generate public URL to send back
+        $avatarUrl = $user->avatar ? Storage::url($user->avatar) : null;
+
+        return response()->json([
+            'flash' => 'Profile updated successfully!',
+            'avatar' => $avatarUrl,
+        ]);
     }
 
     public function updatePassword(Request $request)
@@ -57,5 +58,22 @@ class ProfileController extends Controller
         $user->save();
 
         return back()->with('success', 'Password changed successfully!');
+    }
+
+    public function updateName(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user instanceof \App\Models\User) {
+            $user = User::find(Auth::id());
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+
+        $user->name = $request->name;
+        $user->save();
+
+        return back()->with('success', 'Name updated successfully!');
     }
 }

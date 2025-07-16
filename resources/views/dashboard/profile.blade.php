@@ -87,7 +87,7 @@
 
                     <button type="submit" class="btn btn-primary w-100">Change Password</button>
                 </form>
-            </div>
+            </div>|
         </div>
     </div>
 @endsection

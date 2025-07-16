@@ -76,4 +76,32 @@ class ClientOnboardingController extends Controller
             return redirect()->back()->with('error', 'Client creation failed: ' . $e->getMessage());
         }
     }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $client = $user->client;
+
+        if (!$client) {
+            return redirect()->route('client.onboarding')->with('error', 'You need to onboard first.');
+        }
+
+        $request->validate([
+            'brand_name' => 'required|string|max:255',
+            'website' => 'nullable|url',
+            'branding' => 'nullable|string',
+            'company_email' => 'nullable|email|max:255'
+        ]);
+
+        try {
+            $client->update($request->only(['brand_name', 'website', 'branding', 'company_email']));
+            return redirect()->route('client')->with('success', 'Client details updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Client update failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Client update failed: ' . $e->getMessage());
+        }
+    }
 }

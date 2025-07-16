@@ -94,7 +94,19 @@ Route::get('/verify-domain', [DomainVerificationController::class, 'verify'])->n
  * 
  * 
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * Client Dashboard
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  * 
@@ -111,18 +123,20 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/client/{any?}', function 
     ]);
 })->where('any', '.*')->name('client');
 
-// Profile Page
+// Profile
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function () {
         $user = Auth::user();
         return view('dashboard.profile', compact('user'));
     })->name('profile');
 
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // API routes for profile management
+    Route::post('/profile/update', [ProfileController::class, 'updateName'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
-// Team Members Page
+// Team Members
 Route::middleware(['auth'])->group(function () {
     Route::get('/team-members', function () {
         $user = Auth::user();
@@ -169,7 +183,20 @@ Route::middleware(['auth'])->group(function () {
  * 
  * 
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * Admin Dashboard
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  * 
