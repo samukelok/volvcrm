@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Funnel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class FunnelsController extends Controller
 {
@@ -23,6 +25,9 @@ class FunnelsController extends Controller
      */
     public function store(Request $request)
     {
+        // Log raw incoming request data
+        Log::info('Incoming funnel form data:', $request->all());
+
         // Validate incoming request
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -38,9 +43,12 @@ class FunnelsController extends Controller
             'status' => 'nullable|string|max:100',
         ]);
 
+        $validated['user_id'] = Auth::id();
+        $validated['client_id'] = Auth::user()?->client?->id;
+
         $funnel = Funnel::create($validated);
 
-        return response()->json($funnel, 201);
+        return response()->json(['flash' => 'Funnel sent successfully :)']);
     }
 
     /**
@@ -75,7 +83,7 @@ class FunnelsController extends Controller
 
         $funnel->update($validated);
 
-        return response()->json($funnel);
+        return response()->json(['flash' => 'Funnel updated successfully :)']);
     }
 
     /**
@@ -85,6 +93,6 @@ class FunnelsController extends Controller
     {
         $funnel->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['flash' => 'Funnel deleted successfully :)']);
     }
 }

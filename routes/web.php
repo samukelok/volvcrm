@@ -13,6 +13,7 @@ use App\Http\Controllers\ClientOnboardingController;
 use App\Http\Controllers\DomainVerificationController;
 use App\Services\CpanelService;
 use App\Models\Invitation;
+use App\Http\Controllers\FunnelsController;
 
 use App\Models\Role;
 
@@ -179,6 +180,9 @@ Route::middleware(['auth'])->group(function () {
     })->middleware('auth');
 });
 
+// Funnels:
+Route::post('/funnels/submit', [FunnelsController::class, 'store']);
+
 /**
  * 
  * 
@@ -220,6 +224,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/admin/{any?}', function (
  */
 
 Route::middleware(['web'])->group(function () {
+    //Auth
     Route::post('/api/login', [AuthController::class, 'login']);
     Route::post('/api/register', [AuthController::class, 'register']);
     Route::post('/api/logout', [AuthController::class, 'logout']);

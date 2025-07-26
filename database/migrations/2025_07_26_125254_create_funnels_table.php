@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('goal'); //Describe what you want to achieve with this funnel. 
             $table->text('target_audience');
             $table->string('cta');
-            $table->text('notes'); //Addtional Requests
+            $table->text('notes')->nullable(); //Addtional Requests
             $table->date('deadline');
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();

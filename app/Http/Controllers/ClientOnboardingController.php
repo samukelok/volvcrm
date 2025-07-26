@@ -66,7 +66,7 @@ class ClientOnboardingController extends Controller
             // 6. Redirect to new subdomain dashboard
             $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
             // return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
-            return redirect()->route('client')->with('success', 'Account created successfully! Welcome to VolvCRM!');
+            return redirect()->route('client')->with('success', 'Welcome to VolvCRM!');
 
         } catch (\Exception $e) {
             Log::error('Client creation failed', [
