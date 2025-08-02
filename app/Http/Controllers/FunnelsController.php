@@ -15,7 +15,7 @@ class FunnelsController extends Controller
     public function index()
     {
         // Fetch all funnels, eager load related user and client
-        $funnels = Funnel::with(['user', 'client'])->get();
+        $funnels = Funnel::with(['user', 'client', 'media'])->get();
 
         return response()->json($funnels);
     }
@@ -26,9 +26,7 @@ class FunnelsController extends Controller
     public function store(Request $request)
     {
         // Log raw incoming request data
-        Log::info('Incoming funnel form data:', $request->all());
-        Log::info('Incoming funnel form data:', $request->except('media'));
-        Log::info('Media files:', $request->file('media'));
+        Log::info('Incoming funnel form data:', $request->all() ?? []);
 
         // Validate incoming request
         $validated = $request->validate([
@@ -64,8 +62,7 @@ class FunnelsController extends Controller
         }
 
        return response()->json([
-            'flash' => 'Funnel sent successfully :)',
-            'funnel' => $funnel->load('media'), 
+            'flash' => 'Funnel sent successfully :)'
         ]);
     }
 
@@ -76,8 +73,32 @@ class FunnelsController extends Controller
     {
         // Eager load related user and client
         $funnel->load(['user', 'client']);
+        // Funnel Media If Any
+        $funnel->load('media');
 
         return response()->json($funnel);
+    }
+
+   public function myClientFunnels()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+        
+        if (!$user->client) {
+            return response()->json(['error' => 'User has no associated client'], 400);
+        }
+
+        $funnels = Funnel::with(['user', 'client', 'media'])
+            ->where('client_id', $user->client->id)
+            ->get();
+
+        return response()->json([
+            'user' => $user,
+            'client' => $user->client,
+            'funnels' => $funnels
+        ]);
     }
 
     /**

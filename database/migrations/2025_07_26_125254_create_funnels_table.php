@@ -23,8 +23,8 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->boolean('is_active')->default(true);
-            $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal');
-            $table->string('status')->default('submitted');
+            $table->enum('priority', ['Low', 'Normal', 'High', 'Urgent'])->default('Normal');
+            $table->string('status', ['Pending', 'In Progress', 'Live', 'Complete'])->default('Pending');
             $table->timestamps();
         });
     }

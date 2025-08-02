@@ -182,6 +182,13 @@ Route::middleware(['auth'])->group(function () {
 
 // Funnels:
 Route::post('/funnels/submit', [FunnelsController::class, 'store']);
+Route::get('/funnels', [FunnelsController::class, 'index'])->name('funnels.index');
+Route::get('/funnels/{funnel}', [FunnelsController::class, 'show'])->name('funnels.show');
+Route::put('/funnels/{funnel}', [FunnelsController::class, 'update'])->name('funnels.update');
+Route::delete('/funnels/{funnel}', [FunnelsController::class, 'destroy'])->name('funnels.destroy');
+// routes/web.php
+Route::get('/my-funnels', [FunnelsController::class, 'myClientFunnels']);
+
 
 /**
  * 

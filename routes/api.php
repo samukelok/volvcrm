@@ -17,7 +17,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 
 //Funnels:
-Route::middleware('auth:sanctum')->apiResource('funnels', FunnelsController::class);
+Route::apiResource('funnels', FunnelsController::class);
 
 // Leads
 Route::apiResource('leads', LeadsController::class);
