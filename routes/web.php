@@ -18,7 +18,7 @@ use App\Http\Controllers\FunnelsController;
 use App\Models\Role;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('volvcrm');
 });
 
 /**
