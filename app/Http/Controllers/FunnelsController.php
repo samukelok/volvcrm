@@ -27,6 +27,8 @@ class FunnelsController extends Controller
     {
         // Log raw incoming request data
         Log::info('Incoming funnel form data:', $request->all());
+        Log::info('Incoming funnel form data:', $request->except('media'));
+        Log::info('Media files:', $request->file('media'));
 
         // Validate incoming request
         $validated = $request->validate([
@@ -41,6 +43,7 @@ class FunnelsController extends Controller
             'is_active' => 'boolean',
             'priority' => 'nullable|string|max:50',
             'status' => 'nullable|string|max:100',
+            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240', 
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -48,7 +51,22 @@ class FunnelsController extends Controller
 
         $funnel = Funnel::create($validated);
 
-        return response()->json(['flash' => 'Funnel sent successfully :)']);
+        // Handle media uploads
+       if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $filename = $file->store('funnel-media', 'public');
+
+                $funnel->media()->create([
+                    'file_path' => $filename,
+                    'file_name' => $filename,
+                ]);
+            }
+        }
+
+       return response()->json([
+            'flash' => 'Funnel sent successfully :)',
+            'funnel' => $funnel->load('media'), 
+        ]);
     }
 
     /**

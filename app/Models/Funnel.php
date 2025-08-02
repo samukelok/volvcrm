@@ -40,6 +40,11 @@ class Funnel extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function media()
+    {
+        return $this->hasMany(FunnelMedia::class);
+    }
+
     // Scope: only active funnels
     public function scopeActive($query)
     {
