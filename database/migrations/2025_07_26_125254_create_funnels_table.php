@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->enum('priority', ['Low', 'Normal', 'High', 'Urgent'])->default('Normal');
             $table->string('status', ['Pending', 'In Progress', 'Live', 'Complete'])->default('Pending');
+            $table->string('preview_link')->nullable(); 
             $table->timestamps();
         });
     }

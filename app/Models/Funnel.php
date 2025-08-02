@@ -21,6 +21,7 @@ class Funnel extends Model
         'is_active',
         'priority',
         'status',
+        'preview_link',
     ];
 
     protected $casts = [
