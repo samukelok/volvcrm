@@ -86,7 +86,6 @@ class AuthController extends Controller
                 'user' => $user->load('roles'),
                 'redirect' => $user->hasRole('admin') ? '/admin' : '/client'
             ]);
-
         } catch (\Exception $e) {
             logger('Registration failed: ' . $e->getMessage());
             return response()->json([
@@ -169,37 +168,28 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-        try {
-            // For API (token-based) logout
-            $token = $request->user()?->currentAccessToken();
-            if ($token) {
-                $token->delete();
+            try {
+                // For API (token-based) logout
+                $token = $request->user()?->currentAccessToken();
+                if ($token) {
+                    $token->delete();
+                }
+
+                // For session-based logout
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                // Redirect to the login page
+                return redirect('/login');
+                
+            } catch (\Exception $e) {
+                logger('Logout failed: ' . $e->getMessage());
+                return response()->json([
+                    'flash' => 'Logout failed. Please try again.',
+                    'type' => 'error'
+                ], 500);
             }
-
-            // For session-based logout
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            // Store flash message in session for redirect
-            session()->flash('success', 'You have been logged out successfully.');
-
-            return response()->json([
-                'flash' => 'You have been logged out successfully.',
-                'redirect' => '/login'
-            ]);
-
-        } catch (\Exception $e) {
-            logger('Logout failed: ' . $e->getMessage());
-            return response()->json([
-                'flash' => 'Logout failed. Please try again.',
-                'type' => 'error'
-            ], 500);
-        }
-
-            return response()->json([
-                'redirect' => $redirectTo
-            ]);
         } catch (\Exception $e) {
             logger('Logout failed: ' . $e->getMessage());
             return response()->json([

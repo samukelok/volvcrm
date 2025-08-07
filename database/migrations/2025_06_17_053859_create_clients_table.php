@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, active, suspended
             $table->date('onboarded_at')->nullable();
             $table->json('branding')->nullable(); // colors
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
         });

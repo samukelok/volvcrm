@@ -19,12 +19,19 @@ class Client extends Model
         'status',
         'onboarded_at',
         'branding',
+        'user_id',
     ];
 
     protected $casts = [
         'onboarded_at' => 'datetime',
         'branding' => 'array',
     ];
+
+    // Relationships
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function users()
     {

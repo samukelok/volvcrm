@@ -22,6 +22,13 @@ class ClientOnboardingController extends Controller
     {
         $user = Auth::user();
 
+        // Logger $User Variable
+        logger([
+            'User ID' => $user->id,
+            'User Name' => $user->name,
+            'User Email' => $user->email,
+        ]);
+
         if ($user->client_id) {
             return redirect()->route('client')->with('info', 'You already have a client.');
         }
@@ -53,7 +60,7 @@ class ClientOnboardingController extends Controller
                 'branding' => $request->branding,
                 'subdomain' => $subdomain,
                 'status' => 'pending',
-                'created_by' => $user->id,
+                'user_id' => $user->id,
             ]);
 
             // 4. Link client to user
@@ -67,7 +74,6 @@ class ClientOnboardingController extends Controller
             $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
             // return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
             return redirect()->route('client')->with('success', 'Welcome to VolvCRM!');
-
         } catch (\Exception $e) {
             Log::error('Client creation failed', [
                 'message' => $e->getMessage(),

@@ -22,6 +22,7 @@ class ClientUserSeeder extends Seeder
             'company_email' => 'admin@sphe.com',
             'subdomain' => 'sphe',
             'branding' => '#4e73df, #ffffff',
+            'user_id' => 2,
         ]);
 
         // Create a specific user and link to client: 
