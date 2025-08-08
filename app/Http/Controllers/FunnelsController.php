@@ -85,10 +85,25 @@ class FunnelsController extends Controller
             return response()->json(['error' => 'You are not authorized to view this funnel'], 403);
         }
 
-        // Eager load related user, client, and media
         $funnel->load(['user', 'client', 'media']);
 
-        return response()->json($funnel);
+        // Return the funnel data 
+        return response()->json([
+            'id' => $funnel->id,
+            'title' => $funnel->title,
+            'goal' => $funnel->goal,
+            'target_audience' => $funnel->target_audience,
+            'cta' => $funnel->cta,
+            'notes' => $funnel->notes,
+            'deadline' => $funnel->deadline,
+            'priority' => $funnel->priority,
+            'status' => $funnel->status,
+            'created_at' => $funnel->created_at,
+            'user_id' => $funnel->user_id,
+            'requested_by' => $funnel->user ? $funnel->user->name : null,
+            'preview_link' => $funnel->preview_link,
+            'media' => $funnel->media,
+        ]);
     }
 
     public function myClientFunnels()
