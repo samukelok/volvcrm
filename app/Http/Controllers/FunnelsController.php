@@ -72,10 +72,21 @@ class FunnelsController extends Controller
      */
     public function show(Funnel $funnel)
     {
-        // Eager load related user and client
-        $funnel->load(['user', 'client']);
-        // Funnel Media If Any
-        $funnel->load('media');
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+
+        if (!$user->client) {
+            return response()->json(['error' => 'User has no associated client'], 400);
+        }
+
+        if ($funnel->client_id !== $user->client->id) {
+            return response()->json(['error' => 'You are not authorized to view this funnel'], 403);
+        }
+
+        // Eager load related user, client, and media
+        $funnel->load(['user', 'client', 'media']);
 
         return response()->json($funnel);
     }
