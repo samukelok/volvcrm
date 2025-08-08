@@ -81,9 +81,9 @@ class FunnelsController extends Controller
             return response()->json(['error' => 'User has no associated client'], 400);
         }
 
-        // if ($funnel->client_id !== $user->client->id) {
-        //     return response()->json(['error' => 'You are not authorized to view this funnel'], 403);
-        // }
+        if ($funnel->client_id !== $user->client_id) {
+            return response()->json(['error' => 'You are not authorized to view this funnel'], 403);
+        }
 
         $funnel->load(['user', 'client', 'media']);
 
