@@ -42,7 +42,7 @@ class FunnelsController extends Controller
             'is_active' => 'boolean',
             'priority' => 'nullable|string|max:50',
             'status' => 'nullable|string|max:100',
-            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240', 
+            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -51,7 +51,7 @@ class FunnelsController extends Controller
         $funnel = Funnel::create($validated);
 
         // Handle media uploads
-       if ($request->hasFile('media')) {
+        if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
                 $filename = $file->store('funnel-media', 'public');
 
@@ -62,7 +62,7 @@ class FunnelsController extends Controller
             }
         }
 
-       return response()->json([
+        return response()->json([
             'flash' => 'Funnel sent successfully :)'
         ]);
     }
@@ -91,13 +91,13 @@ class FunnelsController extends Controller
         return response()->json($funnel);
     }
 
-   public function myClientFunnels()
+    public function myClientFunnels()
     {
         $user = Auth::user();
         if (!$user) {
             return response()->json(['error' => 'Not authenticated'], 401);
         }
-        
+
         if (!$user->client) {
             return response()->json(['error' => 'User has no associated client'], 400);
         }
@@ -117,59 +117,47 @@ class FunnelsController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Funnel $funnel)
-{
-    // Log raw incoming request data for debugging
-    Log::info('Incoming funnel update data:', [
-        'title' => $request->input('title'),
-        'goal' => $request->input('goal'),
-        'target_audience' => $request->input('target_audience'),
-        'cta' => $request->input('cta'),
-        'notes' => $request->input('notes'),
-        'deadline' => $request->input('deadline'),
-        'has_files' => $request->hasFile('media'),
-        'deleted_media' => $request->input('deleted_media'),
-    ]);
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'goal' => 'required|string',
+            'target_audience' => 'required|string',
+            'cta' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'deadline' => 'required|date',
+            'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240',
+            'deleted_media.*' => 'nullable|integer',
+        ]);
 
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'goal' => 'required|string',
-        'target_audience' => 'required|string',
-        'cta' => 'required|string|max:255',
-        'notes' => 'nullable|string',
-        'deadline' => 'required|date',
-        'media.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240',
-        'deleted_media.*' => 'nullable|integer',
-    ]);
+        // Update the funnel
+        $funnel->update($validated);
 
-    // Update the funnel
-    $funnel->update($validated);
+        // Handle deleted media
+        if ($request->has('deleted_media')) {
+            $mediaToDelete = $funnel->media()->whereIn('id', $request->input('deleted_media'))->get();
 
-    // Handle deleted media
-    if ($request->has('deleted_media')) {
-        $mediaToDelete = $funnel->media()->whereIn('id', $request->input('deleted_media'))->get();
-        
-        foreach ($mediaToDelete as $media) {
-            Storage::disk('public')->delete($media->file_path);
-            $media->delete();
+            foreach ($mediaToDelete as $media) {
+                Storage::disk('public')->delete($media->file_path);
+                $media->delete();
+            }
         }
-    }
 
-    // Handle new media uploads
-    if ($request->hasFile('media')) {
-        foreach ($request->file('media') as $file) {
-            $filename = $file->store('funnel-media', 'public');
-            $funnel->media()->create([
-                'file_path' => $filename,
-                'file_name' => $file->getClientOriginalName(),
-            ]);
+        // Handle new media uploads
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $filename = $file->store('funnel-media', 'public');
+                $funnel->media()->create([
+                    'file_path' => $filename,
+                    'file_name' => $file->getClientOriginalName(),
+                ]);
+            }
         }
-    }
 
-    return response()->json([
-        'flash' => 'Funnel updated successfully',
-        'funnel' => $funnel->fresh()->load(['user', 'client', 'media'])
-    ]);
-}
+        return response()->json([
+            'flash' => 'Funnel updated successfully',
+            'funnel' => $funnel->fresh()->load(['user', 'client', 'media'])
+        ]);
+    }
 
     public function destroy(Funnel $funnel, Request $request)
     {
@@ -178,16 +166,14 @@ class FunnelsController extends Controller
         ]);
 
         $reason = $request->input('reason', 'No reason provided');
-        
-        Log::info("Funnel deleted - ID: {$funnel->id}, Title: {$funnel->title}, Reason: {$reason}");
 
-        // Delete associated media files
-        foreach ($funnel->media as $media) {
-            Storage::disk('public')->delete($media->file_path);
-            $media->delete();
-        }
+        // Save the reason on the funnel before soft deleting
+        $funnel->deleted_reason = $reason;
+        $funnel->save();
 
         $funnel->delete();
+
+        Log::info("Funnel soft-deleted - ID: {$funnel->id}, Title: {$funnel->title}, Reason: {$reason}");
 
         return response()->json([
             'flash' => 'Funnel deleted successfully'

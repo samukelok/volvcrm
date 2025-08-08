@@ -17,23 +17,23 @@ class ClientUserSeeder extends Seeder
     public function run()
     {
         $client = Client::create([
-            'brand_name' => 'Sphe',
-            'website' => 'sphe.com',
-            'company_email' => 'admin@sphe.com',
-            'subdomain' => 'sphe',
-            'branding' => '#4e73df, #ffffff',
+            'brand_name' => 'Cybernetics Solutions',
+            'website' => 'cybernetics.com',
+            'company_email' => 'admin@cybernetics.com',
+            'subdomain' => 'cybernetics',
+            'branding' => '#08153dff, #ffffff',
             'user_id' => 2,
         ]);
 
         // Create a specific user and link to client: 
         $adminUser = User::create([
-            'name' => 'Sphelele Ngcobo',
-            'email' => 'admin@sphe.com',
+            'name' => 'Samukelo Khanya',
+            'email' => 'samkelokay2@gmail.com',
             'password' => bcrypt('password'),
             'client_id' => $client->id,
         ]);
 
-        $role = Role::firstOrCreate(['name' => 'client_admin']);
+        $role = Role::firstOrCreate(['name' => 'client_user']);
         $adminUser->roles()->attach($role);
 
         // Optionally, add factory users

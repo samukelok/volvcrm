@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Funnel extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -22,6 +23,7 @@ class Funnel extends Model
         'priority',
         'status',
         'preview_link',
+        'deleted_reason',
     ];
 
     protected $casts = [
@@ -30,7 +32,6 @@ class Funnel extends Model
     ];
 
     // Relationships
-
     public function user()
     {
         return $this->belongsTo(User::class);
