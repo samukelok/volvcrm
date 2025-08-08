@@ -22,13 +22,6 @@ class ClientOnboardingController extends Controller
     {
         $user = Auth::user();
 
-        // Logger $User Variable
-        logger([
-            'User ID' => $user->id,
-            'User Name' => $user->name,
-            'User Email' => $user->email,
-        ]);
-
         if ($user->client_id) {
             return redirect()->route('client')->with('info', 'You already have a client.');
         }
