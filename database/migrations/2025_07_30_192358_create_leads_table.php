@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('niche_category');
+            $table->string('niche_category')->nullable();
             $table->string('email');
             $table->string('phone');
             $table->foreignId('funnel_id')->nullable()->constrained()->nullOnDelete();
