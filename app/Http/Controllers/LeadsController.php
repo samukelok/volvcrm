@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Models\Funnel;
 use App\Models\LeadStatusChange;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeadsController extends Controller
 {
@@ -13,45 +15,74 @@ class LeadsController extends Controller
         return Lead::with('statusChanges')->latest()->get();
     }
 
-    public function create()
-    {
-        //
-    }
-
+    // Public endpoint for landing page submissions
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'niche_category' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string|max:25',
-            'funnel_id' => 'nullable|exists:funnels,id',
-            'source' => 'required|string',
-            'source_type' => 'nullable|in:organic,ads,referral,manual',
-            'status' => 'nullable|in:new,contacted,qualified,converted',
-            'pays' => 'nullable|numeric',
-            'client_id' => 'nullable|exists:clients,id',
-            'lead_belongs_to' => 'nullable|array',
-            'metadata' => 'nullable|array',
-            'notes' => 'nullable|string',
-            'contacted_at' => 'nullable|date',
-            'converted_at' => 'nullable|date',
-            'is_test' => 'boolean'
+            'funnel_id' => 'required|exists:funnels,id', // This is our landing page identifier
+            'metadata' => 'nullable|array' // For any additional tracking data
         ]);
 
-        $lead = Lead::create($validated);
+        // Get the funnel (landing page) details
+        $funnel = Funnel::find($validated['funnel_id']);
 
-        return response()->json($lead, 201);
+        // Create lead with automatic user/client assignment
+        $lead = Lead::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'funnel_id' => $validated['funnel_id'],
+            'source' => $funnel->title, // Using funnel title as source
+            'source_type' => 'ads', // Default or extract from metadata
+            'client_id' => $funnel->client_id, // Auto-assign client
+            'user_id' => $funnel->user_id, // Auto-assign user who owns funnel
+            'metadata' => $validated['metadata'] ?? null,
+            'status' => 'new'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'preview_link' => $funnel->preview_link
+        ], 201);
+    }
+
+    // Auth-only endpoint for company leads
+    public function companyLeads()
+    {
+        $user = Auth::user();
+
+        if (!$user->client_id) {
+            return response()->json(['error' => 'Unauthorized - Not associated with any client'], 403);
+        }
+
+        return Lead::where('client_id', $user->client_id)
+            ->with([
+                'funnel' => function ($query) {
+                    $query->select('id', 'title', 'preview_link');
+                }
+            ])
+            ->latest()
+            ->get()
+            ->map(function ($lead) {
+                return [
+                    'name' => $lead->name,
+                    'niche_category' => $lead->niche_category,
+                    'email' => $lead->email,
+                    'phone' => $lead->phone, 
+                    'pays' => $lead->pays, 
+                    'source' => $lead->funnel ? $lead->funnel->title : 'Direct',
+                    'status' => $lead->status, 
+                    'created_at' => $lead->created_at->toDateTimeString() 
+                ];
+            });
     }
 
     public function show(Lead $lead)
     {
         return $lead->load('statusChanges');
-    }
-
-    public function edit(Lead $lead)
-    {
-        //
     }
 
     public function update(Request $request, Lead $lead)
@@ -80,11 +111,13 @@ class LeadsController extends Controller
         $lead->update($validated);
 
         if (isset($validated['status']) && $validated['status'] !== $oldStatus) {
+            $userId = auth()->id() ?? $validated['user_id'] ?? null;
+
             LeadStatusChange::create([
                 'lead_id' => $lead->id,
                 'from_status' => $oldStatus,
                 'to_status' => $validated['status'],
-                'user_id' => auth()->id(),
+                'user_id' => $userId,
                 'changed_at' => now(),
             ]);
         }
