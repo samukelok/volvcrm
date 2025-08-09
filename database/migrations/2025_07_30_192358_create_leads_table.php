@@ -27,12 +27,14 @@ return new class extends Migration
             $table->timestamp('converted_at')->nullable();
             $table->boolean('is_test')->default(false);
             $table->timestamps();
-            $table->softDeletes(); // NEW
+            $table->softDeletes(); 
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('leads');
+        Schema::table('leads', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
