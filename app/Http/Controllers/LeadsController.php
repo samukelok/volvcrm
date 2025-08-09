@@ -7,6 +7,8 @@ use App\Models\Funnel;
 use App\Models\LeadStatusChange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use League\Csv\Writer;
+use SplTempFileObject;
 
 class LeadsController extends Controller
 {
@@ -71,11 +73,11 @@ class LeadsController extends Controller
                     'name' => $lead->name,
                     'niche_category' => $lead->niche_category,
                     'email' => $lead->email,
-                    'phone' => $lead->phone, 
-                    'pays' => $lead->pays, 
+                    'phone' => $lead->phone,
+                    'pays' => $lead->pays,
                     'source' => $lead->funnel ? $lead->funnel->title : 'Direct',
-                    'status' => $lead->status, 
-                    'created_at' => $lead->created_at->toDateTimeString() 
+                    'status' => $lead->status,
+                    'created_at' => $lead->created_at->toDateTimeString()
                 ];
             });
     }
@@ -129,5 +131,103 @@ class LeadsController extends Controller
     {
         $lead->delete();
         return response()->json(['message' => 'Lead deleted.']);
+    }
+
+    public function export()
+    {
+        try {
+            // Use chunking for memory efficiency
+            $csv = Writer::createFromFileObject(new SplTempFileObject());
+
+            // Headers
+            $csv->insertOne([
+                'Name',
+                'Email',
+                'Phone',
+                'Niche',
+                'Pays',
+                'Source',
+                'Status',
+                'Created At',
+                'Funnel',
+                'Client'
+            ]);
+
+            Lead::with(['funnel', 'client', 'user'])
+                ->chunk(500, function ($leads) use ($csv) {
+                    foreach ($leads as $lead) {
+                        $csv->insertOne([
+                            $lead->name,
+                            $lead->email,
+                            $lead->phone ?? 'N/A',
+                            $lead->niche_category,
+                            $lead->pays ?? 'N/A',
+                            $lead->source,
+                            $lead->status,
+                            $lead->created_at->format('Y-m-d H:i:s'),
+                            $lead->funnel->title ?? 'N/A',
+                            $lead->client->brand_name ?? 'N/A'
+                        ]);
+                    }
+                });
+
+            return response()->streamDownload(
+                function () use ($csv) {
+                    echo $csv->getContent();
+                },
+                'leads_export_' . now()->format('Y-m-d') . '.csv',
+                ['Content-Type' => 'text/csv']
+            );
+
+        } catch (\Exception $e) {
+            \Log::error('Export failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Export failed. Please try again later.'
+            ], 500);
+        }
+    }
+
+    private function generateCsvContent($leads)
+    {
+        $output = fopen('php://temp', 'w');
+
+        // Write headers
+        fputcsv($output, [
+            'Name',
+            'Email',
+            'Phone',
+            'Niche',
+            'Monthly Pays',
+            'Source',
+            'Status',
+            'Created At',
+            'Funnel',
+            'Client',
+            'Assigned To'
+        ]);
+
+        // Write rows
+        foreach ($leads as $lead) {
+            fputcsv($output, [
+                $lead->name,
+                $lead->email,
+                $lead->phone,
+                $lead->niche_category,
+                $lead->pays,
+                $lead->source,
+                $lead->status,
+                $lead->created_at->format('Y-m-d H:i:s'),
+                $lead->funnel->title ?? 'N/A',
+                $lead->client->name ?? 'N/A',
+                $lead->user->name ?? 'N/A'
+            ]);
+        }
+
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return $csv;
     }
 }
