@@ -14,6 +14,7 @@ use App\Http\Controllers\DomainVerificationController;
 use App\Services\CpanelService;
 use App\Models\Invitation;
 use App\Http\Controllers\FunnelsController;
+use App\Http\Controllers\LeadsController;
 
 use App\Models\Role;
 
@@ -187,6 +188,9 @@ Route::get('/funnels/{funnel}', [FunnelsController::class, 'show'])->name('funne
 Route::put('/funnels/{funnel}', [FunnelsController::class, 'update'])->name('funnels.update');
 Route::delete('/funnels/{funnel}', [FunnelsController::class, 'destroy'])->name('funnels.destroy');
 Route::get('/my-funnels', [FunnelsController::class, 'myClientFunnels']);
+
+// Leads:
+Route::get('/leads', [LeadsController::class, 'companyLeads']);
 
 /**
  * 
