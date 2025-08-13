@@ -15,6 +15,7 @@ use App\Services\CpanelService;
 use App\Models\Invitation;
 use App\Http\Controllers\FunnelsController;
 use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\DashboardController;
 
 use App\Models\Role;
 
@@ -124,6 +125,9 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/client/{any?}', function 
         'dashboard' => []
     ]);
 })->where('any', '.*')->name('client');
+
+// Stats For Dashboard
+Route::get('/client-dashboard', [DashboardController::class, 'clientDashboard'])->middleware('auth');
 
 // Profile
 Route::middleware(['auth'])->group(function () {
