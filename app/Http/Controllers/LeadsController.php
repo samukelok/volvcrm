@@ -70,6 +70,7 @@ class LeadsController extends Controller
             ->get()
             ->map(function ($lead) {
                 return [
+                    'id'=> $lead->id,
                     'name' => $lead->name,
                     'niche_category' => $lead->niche_category,
                     'email' => $lead->email,
