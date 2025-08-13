@@ -53,6 +53,7 @@ class Lead extends Model
         return $this->belongsTo(User::class);
     }
 
+    
     // Status Change History
     public function statusChanges()
     {

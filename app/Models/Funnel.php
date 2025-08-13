@@ -47,6 +47,11 @@ class Funnel extends Model
         return $this->hasMany(FunnelMedia::class);
     }
 
+     public function leads()
+    {
+        return $this->hasMany(Lead::class, 'funnel_id');
+    }
+
     // Scope: only active funnels
     public function scopeActive($query)
     {
