@@ -107,7 +107,7 @@ class LeadsController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'niche_category' => 'sometimes|string|max:255',
+            'niche_category' => 'nullable|string|max:255',
             'email' => 'sometimes|email',
             'phone' => 'sometimes|string|max:25',
             'funnel_id' => 'nullable|exists:funnels,id',
