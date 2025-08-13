@@ -24,8 +24,8 @@ class LeadsController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'required|string|max:25',
-            'funnel_id' => 'required|exists:funnels,id', // This is our landing page identifier
-            'metadata' => 'nullable|array' // For any additional tracking data
+            'funnel_id' => 'required|exists:funnels,id', 
+            'metadata' => 'nullable|array' 
         ]);
 
         // Get the funnel (landing page) details

@@ -19,8 +19,8 @@ Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 //Funnels:
 Route::apiResource('funnels', FunnelsController::class);
 
-// Leads
-Route::apiResource('leads', LeadsController::class);
+// Leads (Only Store: Public)
+Route::post('/leads', [LeadsController::class, 'store']);
 
 // Lead Status Changes
 Route::apiResource('lead-status-changes', LeadsStatusChangeController::class);
