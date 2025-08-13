@@ -26,6 +26,7 @@ class Lead extends Model
         'metadata',
         'contacted_at',
         'converted_at',
+        'deleted_reason',
         'is_test',
     ];
 
