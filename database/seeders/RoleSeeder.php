@@ -41,6 +41,6 @@ class RoleSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $admin->assignRole('admin');
+        $admin->assignRole('client_admin');
     }
 }

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->timestamp('contacted_at')->nullable();
             $table->timestamp('converted_at')->nullable();
             $table->boolean('is_test')->default(false);
+            $table->longText('deleted_reason')->nullable();
             $table->timestamps();
             $table->softDeletes(); 
         });
