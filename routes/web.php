@@ -191,6 +191,7 @@ Route::get('/my-funnels', [FunnelsController::class, 'myClientFunnels']);
 
 // Leads:
 Route::get('/leads', [LeadsController::class, 'companyLeads']);
+Route::get('/leads/{lead}', [LeadsController::class, 'show']);
 Route::delete('/leads/{lead}', [LeadsController::class, 'destroy']);
 Route::get('leads/export', [LeadsController::class, 'export']);
 

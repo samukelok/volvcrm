@@ -85,6 +85,19 @@ class LeadsController extends Controller
 
     public function show(Lead $lead)
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+
+        if (!$user->client) {
+            return response()->json(['error' => 'User has no associated client'], 400);
+        }
+
+        if ($lead->client_id !== $user->client_id) {
+            return response()->json(['error' => 'You are not authorized to view this funnel'], 403);
+        }
+
         return $lead->load('statusChanges');
     }
 
