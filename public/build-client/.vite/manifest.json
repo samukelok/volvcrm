@@ -1,11 +1,52 @@
 {
+  "_editor-vendor-!~{002}~.js": {
+    "file": "assets/editor-vendor-DB0Gi3nV.css",
+    "src": "_editor-vendor-!~{002}~.js"
+  },
+  "_editor-vendor-CKM8t_sX.js": {
+    "file": "assets/editor-vendor-CKM8t_sX.js",
+    "name": "editor-vendor",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/editor-vendor-DB0Gi3nV.css"
+    ],
+    "assets": [
+      "assets/summernote-jt9apK1s.eot",
+      "assets/summernote-tk6LuLER.woff2",
+      "assets/summernote-MGhHcnpK.woff",
+      "assets/summernote-BDPkqvsB.ttf"
+    ]
+  },
   "index.html": {
-    "file": "assets/index-Ddak7ZOu.js",
+    "file": "assets/index-By5OE76q.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
+    "imports": [
+      "_editor-vendor-CKM8t_sX.js"
+    ],
+    "dynamicImports": [
+      "_editor-vendor-CKM8t_sX.js",
+      "_editor-vendor-CKM8t_sX.js"
+    ],
     "css": [
-      "assets/index-CljNoAz6.css"
+      "assets/index-BByTrjgo.css"
     ]
+  },
+  "node_modules/summernote/dist/font/summernote.eot": {
+    "file": "assets/summernote-jt9apK1s.eot",
+    "src": "node_modules/summernote/dist/font/summernote.eot"
+  },
+  "node_modules/summernote/dist/font/summernote.ttf": {
+    "file": "assets/summernote-BDPkqvsB.ttf",
+    "src": "node_modules/summernote/dist/font/summernote.ttf"
+  },
+  "node_modules/summernote/dist/font/summernote.woff": {
+    "file": "assets/summernote-MGhHcnpK.woff",
+    "src": "node_modules/summernote/dist/font/summernote.woff"
+  },
+  "node_modules/summernote/dist/font/summernote.woff2": {
+    "file": "assets/summernote-tk6LuLER.woff2",
+    "src": "node_modules/summernote/dist/font/summernote.woff2"
   }
 }
