@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\NewFunnelNotification;
+use App\Mail\UpdatedFunnelNotification;
+use Illuminate\Support\Facades\Mail;
 
 class FunnelsController extends Controller
 {
@@ -60,6 +63,21 @@ class FunnelsController extends Controller
                     'file_name' => $filename,
                 ]);
             }
+        }
+
+        $user = Auth::user();
+
+        // Send email notifications
+        $clientUsers = $funnel->client?->users ?? collect();
+
+        $admins = \App\Models\User::whereHas('roles', function ($q) {
+            $q->where('name', 'admin');
+        })->get();
+
+        $recipients = $clientUsers->merge($admins);
+
+        foreach ($recipients as $user) {
+            Mail::to($user->email)->queue(new NewFunnelNotification($funnel));
         }
 
         return response()->json([
@@ -166,6 +184,28 @@ class FunnelsController extends Controller
                     'file_name' => $file->getClientOriginalName(),
                 ]);
             }
+        }
+
+        // Notify users
+        $clientUsers = $funnel->client?->users ?? collect();
+        
+        // Log Client Users
+        Log::info('Client Users: ' . json_encode($clientUsers));
+
+        $admins = \App\Models\User::whereHas('roles', function ($q) {
+            $q->where('name', 'admin');
+        })->get();
+
+        // Log Admins
+        Log::info('Admins: ' . json_encode($admins));
+
+        $recipients = $clientUsers->merge($admins);
+
+        // Log Recipients
+        Log::info('Recipients: ' . json_encode($recipients));
+
+        foreach ($recipients as $user) {
+            Mail::to($user->email)->queue(new UpdatedFunnelNotification($funnel));
         }
 
         return response()->json([
