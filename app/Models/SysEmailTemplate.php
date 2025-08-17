@@ -17,6 +17,7 @@ class SysEmailTemplate extends Model
         'body_html',
         'body_text',
         'category',
+        'preview_img',
         'is_default',
     ];
 
