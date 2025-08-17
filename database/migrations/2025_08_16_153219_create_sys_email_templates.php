@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('category', ['welcome', 'follow_up', 'promo', 'reminder', 'newsletter'])->default('welcome');
             $table->string('preview_img')->nullable();
             $table->boolean('is_default')->default(true); // mark system templates
+            $table->longText('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
