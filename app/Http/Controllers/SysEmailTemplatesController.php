@@ -18,7 +18,7 @@ class SysEmailTemplatesController extends Controller
         // Append public URL for preview_img
         $templates->map(function ($template) {
             if ($template->preview_img) {
-                $template->preview_img_url = Storage::url($template->preview_img);
+                $template->preview_img_url = $template->preview_img;
             }
             return $template;
         });
@@ -32,7 +32,7 @@ class SysEmailTemplatesController extends Controller
     public function show(SysEmailTemplate $sysEmailTemplate)
     {
         if ($sysEmailTemplate->preview_img) {
-            $sysEmailTemplate->preview_img_url = Storage::url($sysEmailTemplate->preview_img);
+            $sysEmailTemplate->preview_img_url = $sysEmailTemplate->preview_img;
         }
         return response()->json($sysEmailTemplate);
     }
@@ -49,6 +49,7 @@ class SysEmailTemplatesController extends Controller
             'body_text' => 'nullable|string',
             'category' => 'required|in:welcome,follow_up,promo,reminder,newsletter',
             'preview_img' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240',
+            'description' => 'nullable|string',
             'is_default' => 'boolean',
         ]);
 
@@ -66,6 +67,7 @@ class SysEmailTemplatesController extends Controller
             'body_text' => $request->body_text,
             'category' => $request->category,
             'preview_img' => $filePath ? asset('storage/' . $filePath) : null,
+            'description' => $request->description,
             'is_default' => $request->is_default ?? true,
         ]);
 
@@ -84,6 +86,7 @@ class SysEmailTemplatesController extends Controller
             'body_text' => 'nullable|string',
             'category' => 'sometimes|in:welcome,follow_up,promo,reminder,newsletter',
             'preview_img' => 'nullable|file|mimes:jpg,jpeg,png,gif,svg,webp,pdf|max:10240',
+            'description' => 'sometimes|string',
             'is_default' => 'boolean',
         ]);
 
