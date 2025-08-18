@@ -37,10 +37,10 @@ class LeadsController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'funnel_id' => $validated['funnel_id'],
-            'source' => $funnel->title, // Using funnel title as source
-            'source_type' => 'ads', // Default or extract from metadata
-            'client_id' => $funnel->client_id, // Auto-assign client
-            'user_id' => $funnel->user_id, // Auto-assign user who owns funnel
+            'source' => $funnel->title, 
+            'source_type' => 'ads', 
+            'client_id' => $funnel->client_id, 
+            'user_id' => $funnel->user_id, 
             'metadata' => $validated['metadata'] ?? null,
             'status' => 'new'
         ]);

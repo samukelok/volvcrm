@@ -16,6 +16,7 @@ use App\Models\Invitation;
 use App\Http\Controllers\FunnelsController;
 use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmailTemplatesController;
 
 use App\Models\Role;
 
@@ -199,6 +200,14 @@ Route::get('/leads/{lead}', [LeadsController::class, 'show']);
 Route::put('/leads/{lead}', [LeadsController::class, 'update']);
 Route::delete('/leads/{lead}', [LeadsController::class, 'destroy']);
 Route::get('leads/export', [LeadsController::class, 'export']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/email-templates', [EmailTemplatesController::class, 'index']);          
+    Route::get('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'show']); 
+    Route::post('/email-templates', [EmailTemplatesController::class, 'store']);        
+    Route::put('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'update']); 
+    Route::delete('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'destroy']); 
+});
 
 /**
  * 
