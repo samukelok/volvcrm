@@ -17,6 +17,7 @@ use App\Http\Controllers\FunnelsController;
 use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailTemplatesController;
+use App\Http\Controllers\emailVariablesController;
 
 use App\Models\Role;
 
@@ -207,6 +208,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/email-templates', [EmailTemplatesController::class, 'store']);        
     Route::put('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'update']); 
     Route::delete('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'destroy']); 
+    Route::get('/email-variables', [EmailVariablesController::class,'clientEmailVariables']);
 });
 
 /**
