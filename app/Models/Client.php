@@ -47,4 +47,9 @@ class Client extends Model
     {
         return $this->hasMany(Invitation::class);
     }
+
+    public function smtpSettings(): BelongsToMany
+    {
+        return $this->belongsToMany(SMTPSetting::class);
+    }
 }
