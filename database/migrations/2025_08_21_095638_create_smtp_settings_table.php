@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->string('password')->nullable();
             $table->string('encryption')->nullable();
-            $table->foreignId('client_id')->nullable();
-            $table->enum('fallback', ['true', 'false'])->default('true');
+            $table->foreignId('client_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->boolean('fallback')->default(false); // true for system fallback
             $table->timestamps();
         });
     }
