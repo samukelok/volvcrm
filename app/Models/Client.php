@@ -48,8 +48,14 @@ class Client extends Model
         return $this->hasMany(Invitation::class);
     }
 
-    public function smtpSettings(): BelongsToMany
+    public function smtpSetting()
     {
-        return $this->belongsToMany(SMTPSetting::class);
+        return $this->hasOne(SMTPSetting::class);
+    }
+
+    // Returns active SMTP: client SMTP or system fallback
+    public function getActiveSmtpSetting()
+    {
+        return $this->smtpSetting ?? SMTPSetting::where('fallback', true)->first();
     }
 }
