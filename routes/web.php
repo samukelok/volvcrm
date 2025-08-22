@@ -18,6 +18,7 @@ use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailTemplatesController;
 use App\Http\Controllers\emailVariablesController;
+use App\Http\Controllers\SMTPSettingController;
 
 use App\Models\Role;
 
@@ -202,6 +203,7 @@ Route::put('/leads/{lead}', [LeadsController::class, 'update']);
 Route::delete('/leads/{lead}', [LeadsController::class, 'destroy']);
 Route::get('leads/export', [LeadsController::class, 'export']);
 
+// Email Templates
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/email-templates', [EmailTemplatesController::class, 'index']);          
     Route::get('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'show']); 
@@ -209,6 +211,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'update']); 
     Route::delete('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'destroy']); 
     Route::get('/email-variables', [EmailVariablesController::class,'clientEmailVariables']);
+});
+
+// SMTP Settings
+Route::middleware(['auth'])->group(function () {
+    Route::resource('smtp-settings', SMTPSettingController::class)->except(['create', 'edit']);
 });
 
 /**
