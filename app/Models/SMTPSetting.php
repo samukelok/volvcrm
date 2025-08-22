@@ -21,6 +21,7 @@ class SMTPSetting extends Model
 
     protected $casts = [
         'fallback' => 'boolean',
+        'password' => 'encrypted',
     ];
 
     // Relationships
@@ -28,5 +29,11 @@ class SMTPSetting extends Model
     {
         return $this->belongsTo(Client::class);
     }
-    
+
+    // Scopes
+    public function scopeFallback($query)
+    {
+        return $query->where('fallback', true);
+    }
+
 }
