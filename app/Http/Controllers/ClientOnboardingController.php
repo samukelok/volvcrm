@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Client;
+use App\Models\SMTPSetting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Services\CpanelService;
@@ -39,13 +40,12 @@ class ClientOnboardingController extends Controller
             $subdomain = $baseSubdomain;
             $counter = 1;
 
-            // 2. Ensure uniqueness
             while (Client::where('subdomain', $subdomain)->exists()) {
                 $subdomain = $baseSubdomain . $counter;
                 $counter++;
             }
 
-            // 3. Create the client record
+            // 2. Create client
             $client = Client::create([
                 'brand_name' => $request->brand_name,
                 'website' => $request->website,
@@ -56,16 +56,25 @@ class ClientOnboardingController extends Controller
                 'user_id' => $user->id,
             ]);
 
-            // 4. Link client to user
+            // 3. Link client to user
             $user->update(['client_id' => $client->id]);
 
-            // // 5. Create subdomain via cPanel
-            // $cpanel = new CpanelService();
-            // $cpanel->createSubdomain($subdomain);
+            // 4. Assign fallback SMTP to client automatically if none exists
+            $fallbackSmtp = SMTPSetting::where('fallback', operator: true)->first();
+            if ($fallbackSmtp) {
+                // Duplicate fallback SMTP for this client
+                $client->smtpSetting()->create([
+                    'name' => $fallbackSmtp->name,
+                    'host' => $fallbackSmtp->host,
+                    'port' => $fallbackSmtp->port,
+                    'username' => $fallbackSmtp->username,
+                    'password' => $fallbackSmtp->password,
+                    'encryption' => $fallbackSmtp->encryption,
+                    'fallback' => false, 
+                ]);
+            }
 
-            // 6. Redirect to new subdomain dashboard
-            $dashboardUrl = "https://{$subdomain}.cyberkru.com/dashboard";
-            // return redirect()->away($dashboardUrl)->with('success', 'Welcome to VolvCRM!');
+            // 5. Redirect to client dashboard
             return redirect()->route('client')->with('success', 'Welcome to VolvCRM!');
         } catch (\Exception $e) {
             Log::error('Client creation failed', [
