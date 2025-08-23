@@ -24,6 +24,10 @@ class SMTPSetting extends Model
         'password' => 'encrypted',
     ];
 
+    protected $hidden = [
+        'password',
+    ];
+
     // Relationships
     public function client()
     {
