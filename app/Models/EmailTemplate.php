@@ -35,4 +35,17 @@ class EmailTemplate extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function funnel()
+    {
+        return $this->belongsTo(Funnel::class);
+    }
+
+    public function funnelSteps()
+    {
+        return $this->belongsToMany(FunnelStep::class, 'funnel_step_email_template')
+            ->withPivot('order_in_step')
+            ->withTimestamps();
+    }
+
 }

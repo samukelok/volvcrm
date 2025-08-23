@@ -31,6 +31,12 @@ class Funnel extends Model
         'is_active' => 'boolean',
     ];
 
+    // Scopes: only active funnels
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     // Relationships
     public function user()
     {
@@ -47,14 +53,19 @@ class Funnel extends Model
         return $this->hasMany(FunnelMedia::class);
     }
 
-     public function leads()
+    public function leads()
     {
         return $this->hasMany(Lead::class, 'funnel_id');
     }
 
-    // Scope: only active funnels
-    public function scopeActive($query)
+    public function emailTemplates()
     {
-        return $query->where('is_active', true);
+        return $this->hasMany(EmailTemplate::class);
     }
+
+    public function steps()
+    {
+        return $this->hasMany(FunnelStep::class)->orderBy('step_order');
+    }
+
 }
