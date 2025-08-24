@@ -19,6 +19,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailTemplatesController;
 use App\Http\Controllers\emailVariablesController;
 use App\Http\Controllers\SMTPSettingController;
+use App\Http\Controllers\FunnelStepController;
+use App\Http\Controllers\EmailTrackingController;
 
 use App\Models\Role;
 
@@ -196,6 +198,11 @@ Route::put('/funnels/{funnel}', [FunnelsController::class, 'update'])->name('fun
 Route::delete('/funnels/{funnel}', [FunnelsController::class, 'destroy'])->name('funnels.destroy');
 Route::get('/my-funnels', [FunnelsController::class, 'myClientFunnels']);
 
+// Funnel Steps:
+Route::get('/track/open/{lead}/{emailLog}', [EmailTrackingController::class, 'open']);
+Route::get('/track/click/{lead}/{emailLog}', [EmailTrackingController::class, 'click']);
+
+
 // Leads:
 Route::get('/leads', [LeadsController::class, 'companyLeads']);
 Route::get('/leads/{lead}', [LeadsController::class, 'show']);
@@ -205,12 +212,12 @@ Route::get('leads/export', [LeadsController::class, 'export']);
 
 // Email Templates
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/email-templates', [EmailTemplatesController::class, 'index']);          
-    Route::get('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'show']); 
-    Route::post('/email-templates', [EmailTemplatesController::class, 'store']);        
-    Route::put('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'update']); 
-    Route::delete('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'destroy']); 
-    Route::get('/email-variables', [EmailVariablesController::class,'clientEmailVariables']);
+    Route::get('/email-templates', [EmailTemplatesController::class, 'index']);
+    Route::get('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'show']);
+    Route::post('/email-templates', [EmailTemplatesController::class, 'store']);
+    Route::put('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'update']);
+    Route::delete('/email-templates/{emailTemplate}', [EmailTemplatesController::class, 'destroy']);
+    Route::get('/email-variables', [EmailVariablesController::class, 'clientEmailVariables']);
 });
 
 // SMTP Settings
