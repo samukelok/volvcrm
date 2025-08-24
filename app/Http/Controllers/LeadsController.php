@@ -23,7 +23,7 @@ class LeadsController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'phone' => 'required|string|max:25',
+            'phone' => 'nullable|string|max:25',
             'funnel_id' => 'required|exists:funnels,id', 
             'metadata' => 'nullable|array' 
         ]);
