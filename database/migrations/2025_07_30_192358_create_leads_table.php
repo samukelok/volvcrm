@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('niche_category')->nullable();
             $table->string('email');
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->foreignId('funnel_id')->nullable()->constrained()->nullOnDelete();
             $table->string('source');
             $table->enum('source_type', ['organic', 'ads', 'referral', 'manual'])->nullable(); 
